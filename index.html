@@ -236,7 +236,7 @@ footer .copy{max-width:1400px;margin:0 auto;padding-top:28px;font-size:12px;colo
     <h2>All Entries</h2>
     <div class="meta" id="entryCount"></div>
   </div>
-  <div class="tabs">
+  <div class="tabs" id="typeTabs">
     <button data-f="all" aria-pressed="true">All</button>
     <button data-f="trip" aria-pressed="false">Trips</button>
     <button data-f="weekend" aria-pressed="false">Weekends</button>
@@ -468,10 +468,10 @@ function renderArchive(){
     '</div>';
   }).join("") : '<p class="noresults">Nothing found. Try a country, a city or a year.</p>';
 }
-document.querySelectorAll(".tabs button").forEach(function(b){
+document.querySelectorAll("#typeTabs button").forEach(function(b){
   b.addEventListener("click", function(){
     filterType = b.dataset.f;
-    document.querySelectorAll(".tabs button").forEach(function(x){
+    document.querySelectorAll("#typeTabs button").forEach(function(x){
       x.setAttribute("aria-pressed", String(x === b));
     });
     renderArchive();
@@ -486,7 +486,7 @@ $("#search").addEventListener("input", function(){
 document.querySelectorAll("[data-preset-type]").forEach(function(a){
   a.addEventListener("click", function(){
     var type = a.dataset.presetType;
-    var btn = document.querySelector('.tabs button[data-f="'+type+'"]');
+    var btn = document.querySelector('#typeTabs button[data-f="'+type+'"]');
     if (btn) btn.click();
   });
 });

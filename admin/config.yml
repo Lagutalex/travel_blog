@@ -149,7 +149,7 @@ collections:
                 widget: "list"
                 label_singular: "Кадр"
                 required: false
-                summary: "{{fields.kind}} — {{fields.alt}}"
+                summary: "{{fields.caption}}{{fields.alt}}"
                 hint: "Каждый кадр — отдельный блок. Порядок здесь = порядок на странице."
                 fields:
                   - label: "Файл фото"
@@ -172,16 +172,14 @@ collections:
                     required: false
                     hint: "Только код из ссылки, после v=. Из youtube.com/watch?v=aBc123XyZ нужно вписать: aBc123XyZ"
 
-                  - label: "Размер в мозаике"
+                  - label: "Размер в сетке"
                     name: "size"
                     widget: "select"
                     default: "square"
-                    hint: "Чередуй размеры, чтобы страница выглядела живее."
+                    hint: "Фото сохраняет свои пропорции, обрезки не будет. Выбор влияет только на ширину: обычный — одна колонка, широкий — на две (хорошо для панорам и кадров с дрона)."
                     options:
-                      - { label: "Крупный — на две колонки", value: "big" }
-                      - { label: "Широкий — панорама", value: "wide" }
-                      - { label: "Вертикальный", value: "tall" }
-                      - { label: "Квадратный", value: "square" }
+                      - { label: "Обычный — одна колонка", value: "square" }
+                      - { label: "Широкий — на две колонки", value: "wide" }
 
                   - label: "Текст заглушки"
                     name: "alt"

@@ -70,23 +70,33 @@ nav .links a:hover{color:var(--accent-lite)}
 .intro p{font-family:var(--serif);font-weight:400;font-size:clamp(21px,2.6vw,30px);line-height:1.45;
   text-wrap:pretty}
 
+/* Кладка: колонки фиксированы, высота каждого кадра — своя.
+   Высота задаётся через grid-row: span N, N считается из реальных
+   пропорций фото после загрузки. Дыр не остаётся при любом числе кадров. */
 .mosaic{padding:0 var(--pad) clamp(70px,12vh,140px);max-width:1400px;margin:0 auto;
-  display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.m{position:relative}
+  display:grid;grid-template-columns:repeat(3,1fr);
+  column-gap:clamp(8px,1vw,14px);grid-auto-rows:4px}
+.m{grid-row-end:span 90}          /* запасная высота, пока не сработал расчёт */
+.m.col2{grid-column:span 2}
+.m .inner{margin-bottom:clamp(20px,2.4vw,34px)}
+.m img,.m video{width:100%;height:auto;display:block;background:var(--bone)}
 .m .ph{width:100%}
-.m .cap{padding:16px 4px}
-.m .cap p{font-size:15px;line-height:1.6;font-weight:300;margin-bottom:8px}
-.m .cap .q{font-family:var(--mono);font-size:12px;color:var(--accent)}
-.m-big{grid-column:span 2;grid-row:span 2}
-.m-big .ph{aspect-ratio:16/11}
-.m-wide{grid-column:span 2}
-.m-wide .ph{aspect-ratio:16/9}
-.m-tall .ph{aspect-ratio:3/4}
-.m-square .ph{aspect-ratio:1/1}
-@media(max-width:820px){
-  .mosaic{grid-template-columns:1fr;gap:24px}
-  .m-big,.m-wide{grid-column:span 1;grid-row:span 1}
-  .m-big .ph,.m-wide .ph,.m-tall .ph,.m-square .ph{aspect-ratio:4/3}
+.m .cap{padding:12px 2px 0}
+.m .cap p{font-size:15px;line-height:1.6;font-weight:300;margin-bottom:6px}
+.m .cap .q{font-family:var(--mono);font-size:12px;color:var(--accent);line-height:1.5}
+
+/* пропорции только для заглушек — у настоящих фото своя высота */
+.m .ph.ratio-square{aspect-ratio:1/1}
+.m .ph.ratio-tall{aspect-ratio:3/4}
+.m .ph.ratio-wide{aspect-ratio:16/9}
+.m .ph.ratio-big{aspect-ratio:16/11}
+
+@media(max-width:900px){
+  .mosaic{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:620px){
+  .mosaic{grid-template-columns:1fr}
+  .m.col2{grid-column:span 1}
 }
 
 .wheresec{padding:0 var(--pad) clamp(70px,12vh,140px);max-width:1400px;margin:0 auto}
@@ -245,30 +255,39 @@ if (i === -1) {
   }
 
   if (t.media && t.media.length) {
-    html += '<section class="mosaic">'+ t.media.map(function(m){
+    html += '<section class="mosaic" id="mosaic">'+ t.media.map(function(m){
       var size = m.size || "square";
+      /* широкие кадры занимают две колонки, остальные одну */
+      var wide = (size === "wide" || size === "big");
+      var ratio = "ratio-" + size;
       var inner = "";
+
       if (m.kind === "video" && m.videoId) {
-        inner = '<div class="ph"><span>'+esc(m.alt||"VIDEO")+'</span>'+
+        inner = '<div class="ph ratio-wide"><span>'+esc(m.alt||"VIDEO")+'</span>'+
           '<iframe src="https://www.youtube-nocookie.com/embed/'+m.videoId+
           '" title="'+esc(m.alt||"")+'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>';
-      } else if (m.kind === "video") {
-        inner = '<div class="ph"><span>'+esc(m.alt||"VIDEO")+'</span>'+
-          (m.src ? '<video src="'+m.src+'" muted loop playsinline controls onerror="this.remove()"></video>' : '')+
-          '<div class="playmark"><i></i></div></div>';
+      } else if (m.kind === "video" && m.src) {
+        inner = '<video src="'+m.src+'" muted loop playsinline controls preload="metadata"></video>';
+      } else if (m.src) {
+        /* настоящее фото — своя высота, без обрезки */
+        inner = '<img src="'+m.src+'" alt="'+esc(m.alt||"")+'" loading="lazy">';
       } else {
-        inner = '<div class="ph"><span>'+esc(m.alt||"PHOTO")+'</span>'+
-          (m.src ? '<img src="'+m.src+'" alt="'+esc(m.alt||"")+'" loading="lazy" onerror="this.remove()">' : '')+
+        /* файла ещё нет — аккуратная заглушка заданной формы */
+        inner = '<div class="ph '+ratio+'"><span>'+esc(m.alt||"PHOTO")+'</span>'+
+          (m.kind === "video" ? '<div class="playmark"><i></i></div>' : '')+
         '</div>';
       }
+
       var cap = "";
-      if (m.caption || m.quote) {
+      if (m.caption || (m.quote && m.quote.text)) {
         cap = '<div class="cap">'+
           (m.caption ? '<p>'+esc(m.caption)+'</p>' : '')+
-          (m.quote ? '<div class="q">'+esc(m.quote.who)+': "'+esc(m.quote.text)+'"</div>' : '')+
+          (m.quote && m.quote.text
+            ? '<div class="q">'+esc(m.quote.who||"")+': "'+esc(m.quote.text)+'"</div>'
+            : '')+
         '</div>';
       }
-      return '<div class="m m-'+size+'">'+inner+cap+'</div>';
+      return '<div class="m'+(wide ? ' col2' : '')+'"><div class="inner">'+inner+cap+'</div></div>';
     }).join("") + '</section>';
   }
 
@@ -285,6 +304,46 @@ if (i === -1) {
   '</div></section>';
 
   $("#app").innerHTML = html;
+
+  /* ---- кладка: высота каждого кадра считается из его реальных пропорций ---- */
+  (function layoutMosaic(){
+    var grid = document.getElementById("mosaic");
+    if (!grid) return;
+
+    var ROW = 4; /* высота строки сетки, из CSS grid-auto-rows */
+
+    function fit(){
+      var items = grid.querySelectorAll(".m");
+      for (var n = 0; n < items.length; n++) {
+        var inner = items[n].querySelector(".inner");
+        if (!inner) continue;
+        var h = inner.getBoundingClientRect().height;
+        if (h > 0) items[n].style.gridRowEnd = "span " + Math.ceil(h / ROW);
+      }
+    }
+
+    /* пересчитываем по мере подгрузки картинок */
+    var media = grid.querySelectorAll("img, video, iframe");
+    for (var n = 0; n < media.length; n++) {
+      var el = media[n];
+      if (el.tagName === "IMG" && el.complete) continue;
+      el.addEventListener("load", fit);
+      el.addEventListener("loadedmetadata", fit);
+      el.addEventListener("error", function(){
+        /* файла нет — показываем заглушку вместо битой картинки */
+        var box = document.createElement("div");
+        box.className = "ph ratio-square";
+        box.innerHTML = '<span>' + (this.getAttribute("alt") || "PHOTO") + '</span>';
+        if (this.parentNode) this.parentNode.replaceChild(box, this);
+        fit();
+      });
+    }
+
+    fit();
+    addEventListener("load", fit);
+    addEventListener("resize", fit);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  })();
 
   var cc = coordsOf(t);
   if (cc) {
