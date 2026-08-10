@@ -149,16 +149,22 @@ var $ = function(s){ return document.querySelector(s); };
 var esc = function(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
 document.getElementById("yr").textContent = new Date().getFullYear();
 
+var sorted = TRIPS.slice().sort(function(a,b){
+  var da = a.date || (a.year + "-01");
+  var db = b.date || (b.year + "-01");
+  return db.localeCompare(da);
+});
+
 var id = new URLSearchParams(location.search).get("id");
 var i = -1;
-for (var k = 0; k < TRIPS.length; k++) { if (TRIPS[k].id === id) { i = k; break; } }
+for (var k = 0; k < sorted.length; k++) { if (sorted[k].id === id) { i = k; break; } }
 
 if (i === -1) {
   $("#app").innerHTML = '<div class="missing"><h1>This page does not exist yet.</h1>'+
     '<a href="index.html">← All entries</a></div>';
 } else {
-  var t = TRIPS[i];
-  var prev = TRIPS[i+1], next = TRIPS[i-1];
+  var t = sorted[i];
+  var prev = sorted[i+1], next = sorted[i-1];
   document.title = t.title + " — Journal";
 
   var facts = [];

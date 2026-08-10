@@ -87,6 +87,10 @@ section{max-width:1400px;margin:0 auto}
 .trow .go{font-size:13px;letter-spacing:.04em}
 .trow:hover .go{color:var(--accent)}
 .trow:hover h3{color:var(--accent)}
+.viewall{padding:36px 0 8px;text-align:center;border-top:1px solid var(--rule)}
+.viewall a{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  border-bottom:1px solid var(--ink);padding-bottom:4px}
+.viewall a:hover{color:var(--accent);border-color:var(--accent)}
 
 .weekends{padding:0 var(--pad) clamp(50px,9vh,100px)}
 .weekends .head{margin-bottom:40px}
@@ -114,11 +118,17 @@ section{max-width:1400px;margin:0 auto}
 
 .archive{padding:0 var(--pad) clamp(50px,9vh,100px);max-width:1000px}
 .archive .head{margin-bottom:24px}
-.tabs{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap}
+.tabs{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
 .tabs button{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
   padding:8px 16px;border-radius:999px;border:1px solid oklch(80% 0.01 70);cursor:pointer;
   background:transparent;color:var(--ink-2);transition:background .2s,color .2s,border-color .2s}
 .tabs button[aria-pressed="true"]{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+.search{width:100%;font-family:var(--sans);font-size:14px;font-weight:300;padding:12px 16px;
+  border:1px solid var(--rule);background:var(--bg);color:var(--ink);border-radius:2px;
+  margin-bottom:28px}
+.search::placeholder{color:var(--ink-3)}
+.search:focus-visible{outline:2px solid var(--accent);outline-offset:0}
+.noresults{font-size:14px;color:var(--ink-3);padding:24px 0;font-style:italic;font-family:var(--serif)}
 .alist{display:flex;flex-direction:column;max-height:520px;overflow-y:auto}
 .ayear{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--accent);padding:20px 0 4px}
 .arow{display:flex;align-items:baseline;gap:20px;padding:14px 0;border-top:1px solid var(--rule)}
@@ -226,6 +236,8 @@ footer .copy{max-width:1400px;margin:0 auto;padding-top:28px;font-size:12px;colo
     <button data-f="trip" aria-pressed="false">Trips</button>
     <button data-f="weekend" aria-pressed="false">Weekends</button>
   </div>
+  <div class="tabs" id="countryChips" hidden></div>
+  <input id="search" class="search" type="search" placeholder="Search by place or country…">
   <div class="alist" id="alist"></div>
 </section>
 
@@ -270,8 +282,19 @@ function pic(src, alt, extra){
   '</div>';
 }
 
-var trips = TRIPS.filter(function(t){ return t.type !== "weekend"; });
-var weekends = TRIPS.filter(function(t){ return t.type === "weekend"; });
+/* Сортировка по дате — не зависит от того, в каком месте файла
+   лежит запись. Новую поездку можно дописывать хоть в конец. */
+var sorted = TRIPS.slice().sort(function(a,b){
+  var da = a.date || (a.year + "-01");
+  var db = b.date || (b.year + "-01");
+  return db.localeCompare(da);
+});
+
+var trips = sorted.filter(function(t){ return t.type !== "weekend"; });
+var weekends = sorted.filter(function(t){ return t.type === "weekend"; });
+
+var TRIPS_ON_HOME = 4;     /* сколько больших строк показать на главной */
+var WEEKENDS_ON_HOME = 8;  /* сколько квадратов показать на главной */
 
 /* years range in the Trips header */
 if (trips.length) {
@@ -280,8 +303,8 @@ if (trips.length) {
   $("#tripYears").textContent = (lo === hi ? String(hi) : lo + " — " + hi);
 }
 
-/* big alternating rows */
-$("#tripRows").innerHTML = trips.map(function(t){
+/* big alternating rows — только последние, остальное в архиве */
+$("#tripRows").innerHTML = trips.slice(0, TRIPS_ON_HOME).map(function(t){
   return '<a class="trow" href="trip.html?id='+t.id+'">'+
     '<div class="pic">'+pic(t.cover, t.coverAlt)+'</div>'+
     '<div class="body">'+
@@ -292,26 +315,68 @@ $("#tripRows").innerHTML = trips.map(function(t){
     '</div>'+
   '</a>';
 }).join("");
+if (trips.length > TRIPS_ON_HOME) {
+  $("#tripRows").insertAdjacentHTML("beforeend",
+    '<div class="viewall"><a href="#archive" data-preset-type="trip">All '+trips.length+' trips →</a></div>');
+}
 
-/* weekend squares */
+/* weekend squares — только последние, остальное в архиве */
 if (weekends.length) {
   $("#weekends").hidden = false;
-  $("#weekendGrid").innerHTML = weekends.map(function(t){
+  $("#weekendGrid").innerHTML = weekends.slice(0, WEEKENDS_ON_HOME).map(function(t){
     return '<a class="wcard" href="trip.html?id='+t.id+'">'+
       pic(t.cover, t.coverAlt)+
       '<div class="cap"><b>'+esc(t.title)+'</b><span>'+esc(t.dates)+' · '+esc(t.people)+'</span></div>'+
     '</a>';
   }).join("");
+  if (weekends.length > WEEKENDS_ON_HOME) {
+    $("#weekendGrid").insertAdjacentHTML("afterend",
+      '<div class="viewall"><a href="#archive" data-preset-type="weekend">All '+weekends.length+' weekends →</a></div>');
+  }
 }
 
-/* archive with filters */
-var filter = "all";
+/* archive: type tabs + country chips + text search, all combined */
+var filterType = "all";
+var filterCountry = "all";
+var searchText = "";
+
+/* страны, встречающиеся в данных — чипы строятся сами */
+var countries = [];
+sorted.forEach(function(t){ if (countries.indexOf(t.country) === -1) countries.push(t.country); });
+countries.sort();
+if (countries.length > 1) {
+  $("#countryChips").hidden = false;
+  $("#countryChips").innerHTML =
+    '<button data-c="all" aria-pressed="true">All places</button>' +
+    countries.map(function(c){
+      return '<button data-c="'+esc(c)+'" aria-pressed="false">'+esc(c)+'</button>';
+    }).join("");
+  document.querySelectorAll("#countryChips button").forEach(function(b){
+    b.addEventListener("click", function(){
+      filterCountry = b.dataset.c;
+      document.querySelectorAll("#countryChips button").forEach(function(x){
+        x.setAttribute("aria-pressed", String(x === b));
+      });
+      renderArchive();
+    });
+  });
+}
+
 function renderArchive(){
-  var list = TRIPS.filter(function(t){ return filter === "all" || (t.type||"trip") === filter; });
+  var q = searchText.trim().toLowerCase();
+  var list = sorted.filter(function(t){
+    if (filterType !== "all" && (t.type||"trip") !== filterType) return false;
+    if (filterCountry !== "all" && t.country !== filterCountry) return false;
+    if (q) {
+      var hay = (t.title+" "+t.country+" "+(t.places||"")).toLowerCase();
+      if (hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
   var years = [];
   list.forEach(function(t){ if (years.indexOf(t.year) === -1) years.push(t.year); });
   years.sort(function(a,b){ return b-a; });
-  $("#alist").innerHTML = years.map(function(y){
+  $("#alist").innerHTML = years.length ? years.map(function(y){
     return '<div><div class="ayear">'+y+'</div>'+
       list.filter(function(t){ return t.year === y; }).map(function(t){
         return '<a class="arow" href="trip.html?id='+t.id+'">'+
@@ -319,17 +384,31 @@ function renderArchive(){
           '<span class="t">'+esc(t.title)+'</span><span class="x">→</span></a>';
       }).join("")+
     '</div>';
-  }).join("");
+  }).join("") : '<p class="noresults">No entries match.</p>';
 }
 document.querySelectorAll(".tabs button").forEach(function(b){
   b.addEventListener("click", function(){
-    filter = b.dataset.f;
+    filterType = b.dataset.f;
     document.querySelectorAll(".tabs button").forEach(function(x){
       x.setAttribute("aria-pressed", String(x === b));
     });
     renderArchive();
   });
 });
+$("#search").addEventListener("input", function(){
+  searchText = this.value;
+  renderArchive();
+});
+
+/* ссылки "All N trips / weekends" с главной сразу выставляют фильтр */
+document.querySelectorAll("[data-preset-type]").forEach(function(a){
+  a.addEventListener("click", function(){
+    var type = a.dataset.presetType;
+    var btn = document.querySelector('.tabs button[data-f="'+type+'"]');
+    if (btn) btn.click();
+  });
+});
+
 renderArchive();
 $("#entryCount").textContent = TRIPS.length + " SO FAR";
 
