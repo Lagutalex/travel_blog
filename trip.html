@@ -159,6 +159,47 @@ fetch("data/trips.json")
 
 function init(TRIPS) {
 
+var MONTHS = ["January","February","March","April","May","June",
+              "July","August","September","October","November","December"];
+
+function yearOf(t){
+  return t.year || parseInt(String(t.date||"").slice(0,4), 10) || 0;
+}
+function datesOf(t){
+  if (t.dates) return t.dates;
+  var m = /^(\d{4})-(\d{2})$/.exec(t.date || "");
+  if (!m) return "";
+  return MONTHS[parseInt(m[2],10)-1] + " " + m[1];
+}
+function coordsOf(t){
+  if (typeof t.geo === "string" && t.geo.indexOf(",") > -1) {
+    var p = t.geo.split(",");
+    var la = parseFloat(p[0]), ln = parseFloat(p[1]);
+    if (!isNaN(la) && !isNaN(ln)) return [la, ln];
+  }
+  if (typeof t.lat === "number" && typeof t.lng === "number") return [t.lat, t.lng];
+  return null;
+}
+/* "Summer" + год -> "Summer 2026"; если уже с цифрами, оставляем как есть */
+function seasonOf(t){
+  if (!t.season) return "";
+  return /\d/.test(t.season) ? t.season : t.season + " " + yearOf(t);
+}
+/* координатная подпись 43\u00b031' N 16\u00b015' E собирается из координат */
+function dms(v, pos, neg){
+  var hemi = v >= 0 ? pos : neg;
+  v = Math.abs(v);
+  var d = Math.floor(v), m = Math.round((v - d) * 60);
+  if (m === 60) { d++; m = 0; }
+  return d + "\u00b0" + (m < 10 ? "0" : "") + m + "' " + hemi;
+}
+function coordLabel(t){
+  if (t.coords) return t.coords;
+  var c = coordsOf(t);
+  if (!c) return "";
+  return dms(c[0], "N", "S") + " " + dms(c[1], "E", "W");
+}
+
 var sorted = TRIPS.slice().sort(function(a,b){
   var da = a.date || (a.year + "-01");
   var db = b.date || (b.year + "-01");
@@ -178,7 +219,7 @@ if (i === -1) {
   document.title = t.title + " — Journal";
 
   var facts = [];
-  if (t.season) facts.push(esc(t.season));
+  if (t.season) facts.push(esc(seasonOf(t)));
   if (t.days > 0) facts.push(t.days + " days");
   if (t.people) facts.push(esc(t.people));
 
@@ -190,8 +231,8 @@ if (i === -1) {
     '</div>'+
     '<div class="veil"></div>'+
     '<div class="txt">'+
-      '<div class="coords">'+esc(t.coords||"")+
-        (t.coords && t.places ? ' &nbsp;—&nbsp; ' : '')+
+      '<div class="coords">'+esc(coordLabel(t))+
+        (coordLabel(t) && t.places ? ' &nbsp;—&nbsp; ' : '')+
         esc(String(t.places||"").toUpperCase())+'</div>'+
       '<h1>'+esc(t.title)+'</h1>'+
       '<div class="facts">'+facts.join('<span>·</span>')+'</div>'+
@@ -231,7 +272,7 @@ if (i === -1) {
     }).join("") + '</section>';
   }
 
-  if (typeof t.lat === "number") {
+  if (coordsOf(t)) {
     html += '<section class="wheresec"><div class="head"><h2>Where this was</h2>'+
       '<div class="meta">'+esc(String(t.places||"").toUpperCase())+'</div></div>'+
       '<div id="map"></div></section>';
@@ -245,12 +286,13 @@ if (i === -1) {
 
   $("#app").innerHTML = html;
 
-  if (typeof t.lat === "number") {
-    var map = L.map('map', { scrollWheelZoom:false }).setView([t.lat, t.lng], 8);
+  var cc = coordsOf(t);
+  if (cc) {
+    var map = L.map('map', { scrollWheelZoom:false }).setView(cc, 8);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
       attribution:'&copy; OpenStreetMap &copy; CARTO', maxZoom:18
     }).addTo(map);
-    L.marker([t.lat, t.lng], {
+    L.marker(cc, {
       icon: L.divIcon({ className:'', html:'<div class="pin"></div>', iconSize:[11,11], iconAnchor:[5,5] })
     }).addTo(map);
     map.on('click', function(){ map.scrollWheelZoom.enable(); });

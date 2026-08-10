@@ -1,25 +1,136 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Olahuta — Admin</title>
-  <!-- Netlify Identity: обслуживает вход по email/паролю -->
+  <title>Olahuta — админка</title>
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
-  <!-- Сама админка целиком грузится отсюда, свой код не нужен -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script>
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", function (user) {
-        if (!user) {
-          window.netlifyIdentity.on("login", function () {
-            document.location.href = "/admin/";
+  /* ------------------------------------------------------------------
+     Виджет "geosearch": пишешь название места, жмёшь Найти,
+     выбираешь из списка — координаты подставляются сами.
+     Хранит значение строкой "широта,долгота".
+     Поиск через Photon (OpenStreetMap), бесплатно и без ключей.
+     ------------------------------------------------------------------ */
+  var GeoSearchControl = createClass({
+    getInitialState: function () {
+      return { query: "", results: [], busy: false, error: "" };
+    },
+
+    search: function () {
+      var self = this;
+      var q = this.state.query.trim();
+      if (!q) return;
+      this.setState({ busy: true, error: "", results: [] });
+
+      fetch("https://photon.komoot.io/api/?limit=5&q=" + encodeURIComponent(q))
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var list = (data.features || []).map(function (f) {
+            var p = f.properties || {};
+            var parts = [p.name, p.city, p.state, p.country].filter(Boolean);
+            return {
+              label: parts.join(", "),
+              lat: f.geometry.coordinates[1],
+              lng: f.geometry.coordinates[0]
+            };
           });
-        }
-      });
+          self.setState({
+            results: list,
+            busy: false,
+            error: list.length ? "" : "Ничего не найдено — попробуй написать иначе"
+          });
+        })
+        .catch(function () {
+          self.setState({ busy: false, error: "Поиск недоступен. Введи координаты вручную ниже." });
+        });
+    },
+
+    pick: function (item) {
+      var val = item.lat.toFixed(4) + "," + item.lng.toFixed(4);
+      this.props.onChange(val);
+      this.setState({ results: [], query: "" });
+    },
+
+    render: function () {
+      var self = this;
+      var value = this.props.value || "";
+
+      var box = { display: "flex", gap: "8px", marginBottom: "8px" };
+      var inp = { flex: "1", padding: "8px 10px", border: "1px solid #ccc", borderRadius: "3px", fontSize: "14px" };
+      var btn = { padding: "8px 16px", border: "0", borderRadius: "3px", background: "#3a69c7",
+                  color: "#fff", cursor: "pointer", fontSize: "14px" };
+      var item = { padding: "8px 10px", cursor: "pointer", borderBottom: "1px solid #eee", fontSize: "14px" };
+
+      return h("div", { className: this.props.classNameWrapper },
+
+        h("div", { style: box },
+          h("input", {
+            type: "text",
+            placeholder: "Например: Trogir Croatia",
+            style: inp,
+            value: this.state.query,
+            onChange: function (e) { self.setState({ query: e.target.value }); },
+            onKeyDown: function (e) { if (e.key === "Enter") { e.preventDefault(); self.search(); } }
+          }),
+          h("button", { type: "button", style: btn, onClick: this.search },
+            this.state.busy ? "Ищу…" : "Найти")
+        ),
+
+        this.state.error
+          ? h("div", { style: { color: "#c0392b", fontSize: "13px", marginBottom: "8px" } }, this.state.error)
+          : null,
+
+        this.state.results.length
+          ? h("div", { style: { border: "1px solid #ddd", borderRadius: "3px", marginBottom: "8px" } },
+              this.state.results.map(function (r, i) {
+                return h("div", {
+                  key: i,
+                  style: item,
+                  onClick: function () { self.pick(r); }
+                }, r.label + "  —  " + r.lat.toFixed(4) + ", " + r.lng.toFixed(4));
+              })
+            )
+          : null,
+
+        h("input", {
+          type: "text",
+          id: this.props.forID,
+          className: this.props.classNameWrapper,
+          style: inp,
+          placeholder: "широта,долгота — например 43.5125,16.2517",
+          value: value,
+          onChange: function (e) { self.props.onChange(e.target.value); },
+          onFocus: this.props.setActiveStyle,
+          onBlur: this.props.setInactiveStyle
+        }),
+
+        h("div", { style: { fontSize: "12px", color: "#777", marginTop: "6px" } },
+          value ? "Сохранено: " + value : "Пока не задано — точка не появится на карте")
+      );
     }
+  });
+
+  var GeoSearchPreview = createClass({
+    render: function () {
+      return h("div", {}, this.props.value || "");
+    }
+  });
+
+  CMS.registerWidget("geosearch", GeoSearchControl, GeoSearchPreview);
+
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", function (user) {
+      if (!user) {
+        window.netlifyIdentity.on("login", function () {
+          document.location.href = "/admin/";
+        });
+      }
+    });
+  }
   </script>
 </body>
 </html>

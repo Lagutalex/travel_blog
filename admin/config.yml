@@ -2,11 +2,7 @@ backend:
   name: git-gateway
   branch: main
 
-# Сюда попадают фото и видео, загруженные ЧЕРЕЗ АДМИНКУ.
-# Это ОБЩАЯ папка для всех новых загрузок — Decap CMS не умеет
-# надёжно раскладывать их по папке каждой поездки автоматически.
-# Фото, которые ты заливаешь сама через GitHub, по-прежнему можно
-# класть в media/<id-поездки>/ как раньше — работает и так, и так.
+# Фото и видео, загруженные через админку, попадают сюда
 media_folder: "media/uploads"
 public_folder: "/media/uploads"
 
@@ -14,81 +10,196 @@ publish_mode: simple
 
 collections:
   - name: "journal"
-    label: "Travel Journal"
+    label: "Дневник путешествий"
     files:
       - name: "trips"
-        label: "All entries"
+        label: "Все записи"
         file: "data/trips.json"
         fields:
 
-          - label: "Quote for the homepage"
+          - label: "Цитата на главной"
             name: "quote"
             widget: "object"
+            collapsed: true
             fields:
-              - { label: "Text", name: "text", widget: "text" }
-              - { label: "Who said it (e.g. MY WIFE)", name: "who", widget: "string" }
+              - label: "Текст цитаты"
+                name: "text"
+                widget: "text"
+                hint: "Одно-два предложения. Кавычки ставить не нужно — они добавятся сами."
+              - label: "Кто сказал"
+                name: "who"
+                widget: "string"
+                hint: "Заглавными буквами. Например: MY WIFE"
 
-          - label: "Trips & weekends"
+          - label: "Поездки и выходные"
             name: "trips"
             widget: "list"
-            label_singular: "Entry"
-            summary: "{{fields.year}} · {{fields.title}}"
+            label_singular: "Запись"
+            summary: "{{fields.date}} · {{fields.title}}"
             fields:
 
-              - label: "ID"
+              - label: "ID (техническое имя)"
                 name: "id"
                 widget: "string"
-                hint: "Latin letters, no spaces, e.g. italy-2027. Must match the media/ folder name for this trip."
+                hint: "Латиницей, без пробелов и заглавных букв. Так же должна называться папка в media/. Пример: italy-2027"
+                pattern: ['^[a-z0-9-]+$', "Только латинские строчные буквы, цифры и дефис"]
 
-              - label: "Type"
+              - label: "Тип записи"
                 name: "type"
                 widget: "select"
-                options: ["trip", "weekend"]
-                hint: "trip = big row on the homepage. weekend = small square."
+                default: "trip"
+                hint: "Поездка — большой блок с фото на главной. Выходные — маленький квадрат в отдельной сетке."
+                options:
+                  - { label: "Поездка (большая)", value: "trip" }
+                  - { label: "Выходные (короткая)", value: "weekend" }
 
-              - { label: "Title", name: "title", widget: "string" }
-              - { label: "Year", name: "year", widget: "number", value_type: "int" }
+              - label: "Название"
+                name: "title"
+                widget: "string"
+                hint: "Как будет написано крупным заголовком. Пример: Croatia"
 
-              - label: "Date (for sorting)"
+              - label: "Страна"
+                name: "country"
+                widget: "string"
+                hint: "По-английски, одним словом или коротко. По этому полю на главной сами собираются кнопки-фильтры. Примеры: Croatia / Italy / Czech Republic"
+
+              - label: "Когда (год и месяц)"
                 name: "date"
                 widget: "string"
-                hint: "Format YYYY-MM, e.g. 2027-08. This decides the order on the site — the file order doesn't matter."
-                pattern: ['^\d{4}-\d{2}$', "Use the format 2027-08"]
+                hint: "Строго в формате ГОД-МЕСЯЦ, четыре цифры, дефис, две цифры. Пример: 2027-08 — это август 2027. По этому полю сайт сам расставляет записи по порядку и сам пишет 'August 2027' где нужно."
+                pattern: ['^\d{4}-(0[1-9]|1[0-2])$', "Нужен формат 2027-08"]
 
-              - { label: "Season label (shown on the page)", name: "season", widget: "string" }
-              - { label: "Dates label (shown on cards)", name: "dates", widget: "string" }
-              - { label: "Days", name: "days", widget: "number", value_type: "int", required: false, default: 0 }
-              - { label: "People", name: "people", widget: "string", hint: "e.g. with my wife" }
-              - { label: "Places", name: "places", widget: "string", hint: "e.g. Trogir, the islands" }
-              - { label: "Coordinates label", name: "coords", widget: "string", required: false }
-              - { label: "Latitude", name: "lat", widget: "number", value_type: "float", hint: "Right-click the place on Google Maps to copy this." }
-              - { label: "Longitude", name: "lng", widget: "number", value_type: "float" }
+              - label: "Время года"
+                name: "season"
+                widget: "select"
+                default: "Summer"
+                hint: "Год подставится сам. Выберешь Summer — на странице будет 'Summer 2027'."
+                options:
+                  - { label: "Весна — Spring", value: "Spring" }
+                  - { label: "Лето — Summer", value: "Summer" }
+                  - { label: "Осень — Autumn", value: "Autumn" }
+                  - { label: "Зима — Winter", value: "Winter" }
 
-              - { label: "Cover photo (for the card)", name: "cover", widget: "image", required: false }
-              - { label: "Cover photo — placeholder text", name: "coverAlt", widget: "string", required: false }
-              - { label: "Hero photo (top of the trip page)", name: "hero", widget: "image", required: false }
-              - { label: "Hero photo — placeholder text", name: "heroAlt", widget: "string", required: false }
+              - label: "Сколько дней"
+                name: "days"
+                widget: "number"
+                value_type: "int"
+                required: false
+                default: 0
+                hint: "Просто число. Оставь 0 или пусто — тогда на странице ничего про дни написано не будет."
 
-              - { label: "Short excerpt (for cards & lists)", name: "excerpt", widget: "text" }
-              - { label: "Intro paragraph (top of the page)", name: "intro", widget: "text", required: false }
+              - label: "С кем ездили"
+                name: "people"
+                widget: "string"
+                default: "with my wife"
+                hint: "По-английски, с маленькой буквы. Примеры: with my wife / with friends & my wife"
 
-              - label: "Photos & videos"
+              - label: "Места"
+                name: "places"
+                widget: "string"
+                hint: "Города или районы через запятую, по-английски. Пример: Trogir, the islands"
+
+              - label: "Координаты на карте"
+                name: "geo"
+                widget: "geosearch"
+                hint: "Напиши название места и нажми 'Найти' — координаты подставятся сами."
+
+              - label: "Обложка (фото для карточки на главной)"
+                name: "cover"
+                widget: "image"
+                required: false
+                hint: "Вертикальное фото. Если не загрузишь — на сайте будет аккуратная заглушка, ничего не сломается."
+
+              - label: "Обложка — текст заглушки"
+                name: "coverAlt"
+                widget: "string"
+                required: false
+                hint: "Видно только пока фото не загружено. Пример: PHOTO · Trogir old town from the water"
+
+              - label: "Широкое фото в шапку страницы"
+                name: "hero"
+                widget: "image"
+                required: false
+                hint: "Горизонтальное фото на всю ширину экрана."
+
+              - label: "Шапка — текст заглушки"
+                name: "heroAlt"
+                widget: "string"
+                required: false
+
+              - label: "Короткое описание"
+                name: "excerpt"
+                widget: "text"
+                hint: "Одно-два предложения по-английски. Показывается в списке на главной, под названием."
+
+              - label: "Вступительный абзац"
+                name: "intro"
+                widget: "text"
+                required: false
+                hint: "Крупный текст в начале страницы поездки. Здесь можно написать побольше."
+
+              - label: "Фото и видео"
                 name: "media"
                 widget: "list"
-                label_singular: "Photo or video"
+                label_singular: "Кадр"
                 required: false
-                summary: "{{fields.kind}} — {{fields.caption}}"
+                summary: "{{fields.kind}} — {{fields.alt}}"
+                hint: "Каждый кадр — отдельный блок. Порядок здесь = порядок на странице."
                 fields:
-                  - { label: "Photo file", name: "src", widget: "image", required: false, hint: "Leave empty for a video embedded from YouTube." }
-                  - { label: "Kind", name: "kind", widget: "select", options: ["photo", "video"] }
-                  - { label: "YouTube video ID", name: "videoId", widget: "string", required: false, hint: "The part of the YouTube link after v=" }
-                  - { label: "Layout size", name: "size", widget: "select", options: ["big", "wide", "tall", "square"] }
-                  - { label: "Placeholder text", name: "alt", widget: "string" }
-                  - { label: "Caption", name: "caption", widget: "string", required: false }
-                  - label: "Quote"
+                  - label: "Файл фото"
+                    name: "src"
+                    widget: "image"
+                    required: false
+                    hint: "Для видео с YouTube файл не нужен — оставь пустым и заполни поле ниже."
+
+                  - label: "Это фото или видео"
+                    name: "kind"
+                    widget: "select"
+                    default: "photo"
+                    options:
+                      - { label: "Фото", value: "photo" }
+                      - { label: "Видео", value: "video" }
+
+                  - label: "ID видео с YouTube"
+                    name: "videoId"
+                    widget: "string"
+                    required: false
+                    hint: "Только код из ссылки, после v=. Из youtube.com/watch?v=aBc123XyZ нужно вписать: aBc123XyZ"
+
+                  - label: "Размер в мозаике"
+                    name: "size"
+                    widget: "select"
+                    default: "square"
+                    hint: "Чередуй размеры, чтобы страница выглядела живее."
+                    options:
+                      - { label: "Крупный — на две колонки", value: "big" }
+                      - { label: "Широкий — панорама", value: "wide" }
+                      - { label: "Вертикальный", value: "tall" }
+                      - { label: "Квадратный", value: "square" }
+
+                  - label: "Текст заглушки"
+                    name: "alt"
+                    widget: "string"
+                    hint: "Видно, только пока файл не загружен. Пример: PHOTO · Leaving the harbour"
+
+                  - label: "Подпись под кадром"
+                    name: "caption"
+                    widget: "string"
+                    required: false
+                    hint: "Необязательно. Одна строка по-английски."
+
+                  - label: "Реплика"
                     name: "quote"
                     widget: "object"
                     required: false
+                    collapsed: true
+                    hint: "Необязательно. Ради этих реплик весь сайт и задуман — кто что сказал в этот момент."
                     fields:
-                      - { label: "Who said it", name: "who", widget: "string" }
-                      - { label: "What they said", name: "text", widget: "string" }
+                      - label: "Кто сказал"
+                        name: "who"
+                        widget: "string"
+                        hint: "Заглавными. Примеры: WIFE / SAM / US"
+                      - label: "Что сказал"
+                        name: "text"
+                        widget: "string"
+                        hint: "Кавычки не нужны, добавятся сами."

@@ -135,6 +135,10 @@ section{max-width:1400px;margin:0 auto}
 .arow{display:flex;align-items:baseline;gap:20px;padding:14px 0;border-top:1px solid var(--rule)}
 .arow .k{font-family:var(--mono);font-size:11px;color:var(--ink-3);width:90px;flex:none;text-transform:uppercase}
 .arow .t{font-family:var(--serif);font-size:18px;flex:1}
+.arow .c{font-family:var(--mono);font-size:11px;color:var(--ink-3);text-transform:uppercase;
+  letter-spacing:.06em;white-space:nowrap}
+.tabs button i{font-style:normal;opacity:.45;font-size:10px;margin-left:2px}
+@media(max-width:640px){.arow .c{display:none}}
 .arow .x{font-size:13px;color:var(--accent)}
 .arow:hover .t{color:var(--accent)}
 
@@ -238,7 +242,7 @@ footer .copy{max-width:1400px;margin:0 auto;padding-top:28px;font-size:12px;colo
     <button data-f="weekend" aria-pressed="false">Weekends</button>
   </div>
   <div class="tabs" id="countryChips" hidden></div>
-  <input id="search" class="search" type="search" placeholder="Search by place or country…">
+  <input id="search" class="search" type="search" placeholder="Search — country, city, year… (e.g. Italy, 2026, Trogir)">
   <div class="alist" id="alist"></div>
 </section>
 
@@ -285,6 +289,31 @@ fetch("data/trips.json")
 
 function init(TRIPS, HOME_QUOTE) {
 
+var MONTHS = ["January","February","March","April","May","June",
+              "July","August","September","October","November","December"];
+
+/* год берём из поля date, если он не задан отдельно */
+function yearOf(t){
+  return t.year || parseInt(String(t.date||"").slice(0,4), 10) || 0;
+}
+/* подпись вида "August 2027" собирается сама из date */
+function datesOf(t){
+  if (t.dates) return t.dates;
+  var m = /^(\d{4})-(\d{2})$/.exec(t.date || "");
+  if (!m) return "";
+  return MONTHS[parseInt(m[2],10)-1] + " " + m[1];
+}
+/* координаты: новое поле geo "широта,долгота" или старые lat/lng */
+function coordsOf(t){
+  if (typeof t.geo === "string" && t.geo.indexOf(",") > -1) {
+    var p = t.geo.split(",");
+    var la = parseFloat(p[0]), ln = parseFloat(p[1]);
+    if (!isNaN(la) && !isNaN(ln)) return [la, ln];
+  }
+  if (typeof t.lat === "number" && typeof t.lng === "number") return [t.lat, t.lng];
+  return null;
+}
+
 /* photo block that falls back to the striped placeholder */
 function pic(src, alt, extra){
   return '<div class="ph'+(extra||"")+'"><span>'+esc(alt||"PHOTO")+'</span>'+
@@ -292,12 +321,12 @@ function pic(src, alt, extra){
   '</div>';
 }
 
-/* Сортировка по дате — не зависит от того, в каком месте файла
+/* Сортировка по году+месяцу — не зависит от того, в каком месте файла
    лежит запись. Новую поездку можно дописывать хоть в конец. */
 var sorted = TRIPS.slice().sort(function(a,b){
-  var da = a.date || (a.year + "-01");
-  var db = b.date || (b.year + "-01");
-  return db.localeCompare(da);
+  var ka = a.year * 100 + (a.month || 1);
+  var kb = b.year * 100 + (b.month || 1);
+  return kb - ka;
 });
 
 var trips = sorted.filter(function(t){ return t.type !== "weekend"; });
@@ -308,7 +337,7 @@ var WEEKENDS_ON_HOME = 8;  /* сколько квадратов показать
 
 /* years range in the Trips header */
 if (trips.length) {
-  var ys = trips.map(function(t){ return t.year; });
+  var ys = trips.map(function(t){ return yearOf(t); });
   var lo = Math.min.apply(null, ys), hi = Math.max.apply(null, ys);
   $("#tripYears").textContent = (lo === hi ? String(hi) : lo + " — " + hi);
 }
@@ -318,7 +347,7 @@ $("#tripRows").innerHTML = trips.slice(0, TRIPS_ON_HOME).map(function(t){
   return '<a class="trow" href="trip.html?id='+t.id+'">'+
     '<div class="pic">'+pic(t.cover, t.coverAlt)+'</div>'+
     '<div class="body">'+
-      '<div class="tag">'+t.year+' · '+esc(String(t.people||"").toUpperCase())+'</div>'+
+      '<div class="tag">'+yearOf(t)+' · '+esc(String(t.people||"").toUpperCase())+'</div>'+
       '<h3>'+esc(t.title)+'</h3>'+
       '<p>'+esc(t.excerpt)+'</p>'+
       '<span class="go">View trip →</span>'+
@@ -336,7 +365,7 @@ if (weekends.length) {
   $("#weekendGrid").innerHTML = weekends.slice(0, WEEKENDS_ON_HOME).map(function(t){
     return '<a class="wcard" href="trip.html?id='+t.id+'">'+
       pic(t.cover, t.coverAlt)+
-      '<div class="cap"><b>'+esc(t.title)+'</b><span>'+esc(t.dates)+' · '+esc(t.people)+'</span></div>'+
+      '<div class="cap"><b>'+esc(t.title)+'</b><span>'+esc(monthYear(t))+' · '+esc(t.people)+'</span></div>'+
     '</a>';
   }).join("");
   if (weekends.length > WEEKENDS_ON_HOME) {
@@ -352,14 +381,17 @@ var searchText = "";
 
 /* страны, встречающиеся в данных — чипы строятся сами */
 var countries = [];
-sorted.forEach(function(t){ if (countries.indexOf(t.country) === -1) countries.push(t.country); });
+sorted.forEach(function(t){
+  if (t.country && countries.indexOf(t.country) === -1) countries.push(t.country);
+});
 countries.sort();
 if (countries.length > 1) {
   $("#countryChips").hidden = false;
   $("#countryChips").innerHTML =
     '<button data-c="all" aria-pressed="true">All places</button>' +
     countries.map(function(c){
-      return '<button data-c="'+esc(c)+'" aria-pressed="false">'+esc(c)+'</button>';
+      var n = sorted.filter(function(t){ return t.country === c; }).length;
+      return '<button data-c="'+esc(c)+'" aria-pressed="false">'+esc(c)+' <i>'+n+'</i></button>';
     }).join("");
   document.querySelectorAll("#countryChips button").forEach(function(b){
     b.addEventListener("click", function(){
@@ -372,29 +404,62 @@ if (countries.length > 1) {
   });
 }
 
+/* убираем диакритику: Böhmische -> bohmische, Transfăgărășan -> transfagarasan */
+function norm(s){
+  return String(s == null ? "" : s)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+/* всё, по чему имеет смысл искать одну запись */
+function haystack(t){
+  return norm([
+    t.title,
+    t.country,
+    t.places,
+    t.excerpt,
+    t.season,
+    seasonLabel(t),
+    datesOf(t),
+    yearOf(t),
+    ((t.type||"trip") === "weekend" ? "weekend выходные" : "trip поездка"),
+    t.id
+  ].join(" "));
+}
+function seasonLabel(t){
+  if (!t.season) return "";
+  return /\d/.test(t.season) ? t.season : t.season + " " + yearOf(t);
+}
+
 function renderArchive(){
-  var q = searchText.trim().toLowerCase();
+  /* несколько слов = все должны найтись: "italy 2026" сработает */
+  var words = norm(searchText).split(/\s+/).filter(Boolean);
   var list = sorted.filter(function(t){
     if (filterType !== "all" && (t.type||"trip") !== filterType) return false;
     if (filterCountry !== "all" && t.country !== filterCountry) return false;
-    if (q) {
-      var hay = (t.title+" "+t.country+" "+(t.places||"")).toLowerCase();
-      if (hay.indexOf(q) === -1) return false;
+    if (words.length) {
+      var hay = haystack(t);
+      for (var w = 0; w < words.length; w++) {
+        if (hay.indexOf(words[w]) === -1) return false;
+      }
     }
     return true;
   });
   var years = [];
-  list.forEach(function(t){ if (years.indexOf(t.year) === -1) years.push(t.year); });
+  list.forEach(function(t){ var y=yearOf(t); if (years.indexOf(y) === -1) years.push(y); });
   years.sort(function(a,b){ return b-a; });
   $("#alist").innerHTML = years.length ? years.map(function(y){
     return '<div><div class="ayear">'+y+'</div>'+
-      list.filter(function(t){ return t.year === y; }).map(function(t){
+      list.filter(function(t){ return yearOf(t) === y; }).map(function(t){
         return '<a class="arow" href="trip.html?id='+t.id+'">'+
           '<span class="k">'+((t.type||"trip") === "weekend" ? "Weekend" : "Trip")+'</span>'+
-          '<span class="t">'+esc(t.title)+'</span><span class="x">→</span></a>';
+          '<span class="t">'+esc(t.title)+'</span>'+
+          '<span class="c">'+esc(t.country||"")+'</span>'+
+          '<span class="x">→</span></a>';
       }).join("")+
     '</div>';
-  }).join("") : '<p class="noresults">No entries match.</p>';
+  }).join("") : '<p class="noresults">Nothing found. Try a country, a city or a year.</p>';
 }
 document.querySelectorAll(".tabs button").forEach(function(b){
   b.addEventListener("click", function(){
@@ -436,13 +501,14 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png
   attribution:'&copy; OpenStreetMap &copy; CARTO', maxZoom:18
 }).addTo(map);
 TRIPS.forEach(function(t){
-  if (typeof t.lat !== "number") return;
-  pts.push([t.lat, t.lng]);
-  L.marker([t.lat, t.lng], {
+  var c = coordsOf(t);
+  if (!c) return;
+  pts.push(c);
+  L.marker(c, {
     icon: L.divIcon({ className:'', html:'<div class="pin"></div>', iconSize:[11,11], iconAnchor:[5,5] }),
     title: t.title
   }).addTo(map).bindPopup(
-    '<div class="y">'+t.year+' · '+esc(String(t.places||"").toUpperCase())+'</div>'+
+    '<div class="y">'+yearOf(t)+' · '+esc(String(t.places||"").toUpperCase())+'</div>'+
     '<div class="t">'+esc(t.title)+'</div>'+
     '<a class="a" href="trip.html?id='+t.id+'">View trip →</a>'
   );
