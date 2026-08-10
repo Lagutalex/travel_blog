@@ -1,0 +1,266 @@
+{
+  "quote": {
+    "text": "We don't collect countries — we collect evenings when everyone was sitting together and it was worth the drive to get there.",
+    "who": "MY WIFE"
+  },
+  "trips": [
+    {
+      "id": "boehmische-schweiz-2026",
+      "type": "weekend",
+      "title": "Böhmische Schweiz",
+      "year": 2026,
+      "date": "2026-07",
+      "season": "July 2026",
+      "dates": "July 2026",
+      "days": 2,
+      "people": "with my wife",
+      "places": "Hřensko, Pravčická brána",
+      "coords": "50°52' N 14°14' E",
+      "lat": 50.8756,
+      "lng": 14.2372,
+      "cover": "media/boehmische-schweiz-2026/cover.jpg",
+      "coverAlt": "PHOTO · Pravčická brána, the stone arch",
+      "hero": "media/boehmische-schweiz-2026/hero.jpg",
+      "heroAlt": "PHOTO · Sandstone towers above the gorge",
+      "excerpt": "Two days of sandstone towers and gorges, close enough to leave after breakfast.",
+      "intro": "Close enough that we left after breakfast and were walking by mid-morning. Sandstone towers, a gorge you cross by boat, and the arch that everyone photographs and nobody manages to make look as big as it is.",
+      "media": [
+        {
+          "src": "media/boehmische-schweiz-2026/01.jpg",
+          "kind": "photo",
+          "size": "big",
+          "alt": "PHOTO · The arch from the path below",
+          "caption": "",
+          "quote": null
+        },
+        {
+          "src": "media/boehmische-schweiz-2026/02.jpg",
+          "kind": "photo",
+          "size": "tall",
+          "alt": "PHOTO · The gorge, from the boat",
+          "caption": "",
+          "quote": null
+        },
+        {
+          "src": "media/boehmische-schweiz-2026/03.jpg",
+          "kind": "photo",
+          "size": "square",
+          "alt": "PHOTO · Sandstone and pine",
+          "caption": "",
+          "quote": null
+        }
+      ]
+    },
+    {
+      "id": "croatia-2026",
+      "type": "trip",
+      "title": "Croatia",
+      "year": 2026,
+      "date": "2026-06",
+      "season": "Summer 2026",
+      "dates": "June 2026",
+      "days": 7,
+      "people": "with my wife",
+      "places": "Trogir, the islands",
+      "coords": "43°31' N 16°15' E",
+      "lat": 43.5125,
+      "lng": 16.2517,
+      "cover": "media/croatia-2026/cover.jpg",
+      "coverAlt": "PHOTO · Trogir old town from the water",
+      "hero": "media/croatia-2026/hero.jpg",
+      "heroAlt": "PHOTO · The stone town at the end of the day",
+      "excerpt": "A stone island town you can cross in ten minutes, and a boat out to the islands nearly every morning.",
+      "intro": "Trogir is small enough to walk across in ten minutes and old enough that every one of those minutes passes something worth stopping for. We stayed inside the walls, left by boat most mornings, and came back each evening sunburnt and quiet.",
+      "media": [
+        {
+          "src": "media/croatia-2026/01.jpg",
+          "kind": "photo",
+          "size": "big",
+          "alt": "PHOTO · The old town from above, early morning",
+          "caption": "Before the day boats arrived, the whole place was ours.",
+          "quote": {
+            "who": "WIFE",
+            "text": "Let's get up this early every day"
+          }
+        },
+        {
+          "src": "media/croatia-2026/02.jpg",
+          "kind": "photo",
+          "size": "tall",
+          "alt": "PHOTO · Leaving the harbour",
+          "caption": "Out past the breakwater, every morning.",
+          "quote": null
+        },
+        {
+          "src": "media/croatia-2026/03.mp4",
+          "kind": "video",
+          "videoId": "",
+          "size": "square",
+          "alt": "VIDEO · The islands from the drone",
+          "caption": "Water that colour doesn't photograph from the ground.",
+          "quote": null
+        },
+        {
+          "src": "media/croatia-2026/04.jpg",
+          "kind": "photo",
+          "size": "square",
+          "alt": "PHOTO · Somewhere between islands",
+          "caption": "We stopped counting which bay was which.",
+          "quote": null
+        },
+        {
+          "src": "media/croatia-2026/05.jpg",
+          "kind": "photo",
+          "size": "wide",
+          "alt": "PHOTO · Last evening on the walls",
+          "caption": "The evening we decided to come back in September.",
+          "quote": {
+            "who": "US",
+            "text": "Next time, after the boats are gone"
+          }
+        }
+      ]
+    },
+    {
+      "id": "dolomites-2026",
+      "type": "trip",
+      "title": "Dolomites",
+      "year": 2026,
+      "date": "2026-05",
+      "season": "Spring 2026",
+      "dates": "May 2026",
+      "days": 6,
+      "people": "with my wife",
+      "places": "Alta Badia, Cortina",
+      "coords": "46°32' N 12°08' E",
+      "lat": 46.5405,
+      "lng": 12.1357,
+      "cover": "media/dolomites-2026/cover.jpg",
+      "coverAlt": "PHOTO · Ridgeline in the morning light",
+      "hero": "media/dolomites-2026/hero.jpg",
+      "heroAlt": "PHOTO · Peaks still holding snow",
+      "excerpt": "Peaks still holding snow, valleys already green — both seasons in the same afternoon.",
+      "intro": "May is the strange month here. The valleys have already turned green and the peaks have not yet let go of winter, so you spend the day walking through both at once. We picked routes by how they looked from the car and regretted almost none of them.",
+      "media": [
+        {
+          "src": "media/dolomites-2026/01.jpg",
+          "kind": "photo",
+          "size": "big",
+          "alt": "PHOTO · The ridgeline we still talk about",
+          "caption": "Two hours up, and worth every one of them.",
+          "quote": null
+        },
+        {
+          "src": "media/dolomites-2026/02.jpg",
+          "kind": "photo",
+          "size": "tall",
+          "alt": "PHOTO · Late snow on the north face",
+          "caption": "",
+          "quote": null
+        },
+        {
+          "src": "media/dolomites-2026/03.jpg",
+          "kind": "photo",
+          "size": "square",
+          "alt": "PHOTO · Dinner at the rifugio",
+          "caption": "",
+          "quote": null
+        }
+      ]
+    },
+    {
+      "id": "barcelona-2025",
+      "type": "trip",
+      "title": "Barcelona",
+      "year": 2025,
+      "date": "2025-11",
+      "season": "Autumn 2025",
+      "dates": "November 2025",
+      "days": 5,
+      "people": "with my wife",
+      "places": "Barcelona",
+      "coords": "41°23' N 2°10' E",
+      "lat": 41.3874,
+      "lng": 2.1686,
+      "cover": "media/barcelona-2025/cover.jpg",
+      "coverAlt": "PHOTO · Rooftops of the Gothic Quarter at dusk",
+      "hero": "media/barcelona-2025/hero.jpg",
+      "heroAlt": "PHOTO · The city at the end of the day",
+      "excerpt": "November turned out to be the right month — warm enough to sit outside, quiet enough to get a table.",
+      "intro": "Five days, mostly walking, mostly eating. November turned out to be the right month for it: warm enough to sit outside in the evening, quiet enough that we never once waited for a table.",
+      "media": [
+        {
+          "src": "media/barcelona-2025/01.jpg",
+          "kind": "photo",
+          "size": "big",
+          "alt": "PHOTO · The Gothic Quarter, early morning",
+          "caption": "",
+          "quote": null
+        },
+        {
+          "src": "media/barcelona-2025/02.jpg",
+          "kind": "photo",
+          "size": "tall",
+          "alt": "PHOTO · Somewhere off Passeig de Gràcia",
+          "caption": "",
+          "quote": null
+        },
+        {
+          "src": "media/barcelona-2025/03.jpg",
+          "kind": "photo",
+          "size": "square",
+          "alt": "PHOTO · The long lunch",
+          "caption": "",
+          "quote": null
+        }
+      ]
+    },
+    {
+      "id": "romania-2025",
+      "type": "trip",
+      "title": "Romania",
+      "year": 2025,
+      "date": "2025-09",
+      "season": "September 2025",
+      "dates": "September 2025",
+      "days": 0,
+      "people": "with friends & my wife",
+      "places": "Bran, Transfăgărășan",
+      "coords": "45°31' N 25°22' E",
+      "lat": 45.5149,
+      "lng": 25.3672,
+      "cover": "media/romania-2025/cover.jpg",
+      "coverAlt": "PHOTO · Bran Castle at dusk, mist over the treeline",
+      "hero": "media/romania-2025/hero.jpg",
+      "heroAlt": "PHOTO · The mountains along the Transfăgărășan",
+      "excerpt": "Bran Castle, the Transfăgărășan, and three days at a cabin with no signal.",
+      "intro": "The Transfăgărășan is the kind of road you plan a whole trip around, and it earned it. After that, three days at a cabin with no signal — which turned out to be the part everyone talks about now.",
+      "media": [
+        {
+          "src": "media/romania-2025/01.jpg",
+          "kind": "photo",
+          "size": "big",
+          "alt": "PHOTO · The road climbing into the mountains",
+          "caption": "",
+          "quote": null
+        },
+        {
+          "src": "media/romania-2025/02.jpg",
+          "kind": "photo",
+          "size": "tall",
+          "alt": "PHOTO · Bran Castle at dusk",
+          "caption": "",
+          "quote": null
+        },
+        {
+          "src": "media/romania-2025/03.jpg",
+          "kind": "photo",
+          "size": "square",
+          "alt": "PHOTO · The cabin, no signal, no complaints",
+          "caption": "",
+          "quote": null
+        }
+      ]
+    }
+  ]
+}

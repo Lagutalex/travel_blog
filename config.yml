@@ -1,0 +1,94 @@
+backend:
+  name: git-gateway
+  branch: main
+
+# Сюда попадают фото и видео, загруженные ЧЕРЕЗ АДМИНКУ.
+# Это ОБЩАЯ папка для всех новых загрузок — Decap CMS не умеет
+# надёжно раскладывать их по папке каждой поездки автоматически.
+# Фото, которые ты заливаешь сама через GitHub, по-прежнему можно
+# класть в media/<id-поездки>/ как раньше — работает и так, и так.
+media_folder: "media/uploads"
+public_folder: "/media/uploads"
+
+publish_mode: simple
+
+collections:
+  - name: "journal"
+    label: "Travel Journal"
+    files:
+      - name: "trips"
+        label: "All entries"
+        file: "data/trips.json"
+        fields:
+
+          - label: "Quote for the homepage"
+            name: "quote"
+            widget: "object"
+            fields:
+              - { label: "Text", name: "text", widget: "text" }
+              - { label: "Who said it (e.g. MY WIFE)", name: "who", widget: "string" }
+
+          - label: "Trips & weekends"
+            name: "trips"
+            widget: "list"
+            label_singular: "Entry"
+            summary: "{{fields.year}} · {{fields.title}}"
+            fields:
+
+              - label: "ID"
+                name: "id"
+                widget: "string"
+                hint: "Latin letters, no spaces, e.g. italy-2027. Must match the media/ folder name for this trip."
+
+              - label: "Type"
+                name: "type"
+                widget: "select"
+                options: ["trip", "weekend"]
+                hint: "trip = big row on the homepage. weekend = small square."
+
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Year", name: "year", widget: "number", value_type: "int" }
+
+              - label: "Date (for sorting)"
+                name: "date"
+                widget: "string"
+                hint: "Format YYYY-MM, e.g. 2027-08. This decides the order on the site — the file order doesn't matter."
+                pattern: ['^\d{4}-\d{2}$', "Use the format 2027-08"]
+
+              - { label: "Season label (shown on the page)", name: "season", widget: "string" }
+              - { label: "Dates label (shown on cards)", name: "dates", widget: "string" }
+              - { label: "Days", name: "days", widget: "number", value_type: "int", required: false, default: 0 }
+              - { label: "People", name: "people", widget: "string", hint: "e.g. with my wife" }
+              - { label: "Places", name: "places", widget: "string", hint: "e.g. Trogir, the islands" }
+              - { label: "Coordinates label", name: "coords", widget: "string", required: false }
+              - { label: "Latitude", name: "lat", widget: "number", value_type: "float", hint: "Right-click the place on Google Maps to copy this." }
+              - { label: "Longitude", name: "lng", widget: "number", value_type: "float" }
+
+              - { label: "Cover photo (for the card)", name: "cover", widget: "image", required: false }
+              - { label: "Cover photo — placeholder text", name: "coverAlt", widget: "string", required: false }
+              - { label: "Hero photo (top of the trip page)", name: "hero", widget: "image", required: false }
+              - { label: "Hero photo — placeholder text", name: "heroAlt", widget: "string", required: false }
+
+              - { label: "Short excerpt (for cards & lists)", name: "excerpt", widget: "text" }
+              - { label: "Intro paragraph (top of the page)", name: "intro", widget: "text", required: false }
+
+              - label: "Photos & videos"
+                name: "media"
+                widget: "list"
+                label_singular: "Photo or video"
+                required: false
+                summary: "{{fields.kind}} — {{fields.caption}}"
+                fields:
+                  - { label: "Photo file", name: "src", widget: "image", required: false, hint: "Leave empty for a video embedded from YouTube." }
+                  - { label: "Kind", name: "kind", widget: "select", options: ["photo", "video"] }
+                  - { label: "YouTube video ID", name: "videoId", widget: "string", required: false, hint: "The part of the YouTube link after v=" }
+                  - { label: "Layout size", name: "size", widget: "select", options: ["big", "wide", "tall", "square"] }
+                  - { label: "Placeholder text", name: "alt", widget: "string" }
+                  - { label: "Caption", name: "caption", widget: "string", required: false }
+                  - label: "Quote"
+                    name: "quote"
+                    widget: "object"
+                    required: false
+                    fields:
+                      - { label: "Who said it", name: "who", widget: "string" }
+                      - { label: "What they said", name: "text", widget: "string" }

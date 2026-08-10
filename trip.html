@@ -143,11 +143,21 @@ footer .copy{font-size:12px;color:oklch(55% 0.01 60)}
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="data/trips.js"></script>
 <script>
 var $ = function(s){ return document.querySelector(s); };
 var esc = function(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
 document.getElementById("yr").textContent = new Date().getFullYear();
+
+fetch("data/trips.json")
+  .then(function(r){ return r.json(); })
+  .then(function(DATA){ init(DATA.trips || []); })
+  .catch(function(err){
+    console.error("Could not load trips.json", err);
+    $("#app").innerHTML = '<div class="missing"><h1>Could not load this page.</h1>'+
+      '<a href="index.html">← All entries</a></div>';
+  });
+
+function init(TRIPS) {
 
 var sorted = TRIPS.slice().sort(function(a,b){
   var da = a.date || (a.year + "-01");
@@ -247,6 +257,8 @@ if (i === -1) {
     map.on('mouseout', function(){ map.scrollWheelZoom.disable(); });
   }
 }
+
+} /* конец init() */
 </script>
 </body>
 </html>

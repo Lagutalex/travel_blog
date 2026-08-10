@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Work+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <style>
 :root{
   --bg:oklch(97% 0.008 75);
@@ -270,10 +271,19 @@ footer .copy{max-width:1400px;margin:0 auto;padding-top:28px;font-size:12px;colo
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="data/trips.js"></script>
 <script>
 var $ = function(s){ return document.querySelector(s); };
 var esc = function(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
+
+fetch("data/trips.json")
+  .then(function(r){ return r.json(); })
+  .then(function(DATA){ init(DATA.trips || [], DATA.quote || null); })
+  .catch(function(err){
+    console.error("Could not load trips.json", err);
+    $("#tripRows").innerHTML = '<p style="padding:24px 0;color:var(--ink-3)">Could not load the trips. Try refreshing the page.</p>';
+  });
+
+function init(TRIPS, HOME_QUOTE) {
 
 /* photo block that falls back to the striped placeholder */
 function pic(src, alt, extra){
@@ -413,7 +423,7 @@ renderArchive();
 $("#entryCount").textContent = TRIPS.length + " SO FAR";
 
 /* quote + year */
-if (typeof HOME_QUOTE !== "undefined") {
+if (HOME_QUOTE) {
   $("#qText").textContent = '"' + HOME_QUOTE.text + '"';
   $("#qWho").textContent = "— " + HOME_QUOTE.who;
 }
@@ -446,6 +456,17 @@ $("#mapCount").textContent = pts.length + " PLACES";
 if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
   var v = $("#heroVideo"); if (v){ v.pause(); v.removeAttribute("autoplay"); }
 }
+
+if (window.netlifyIdentity) {
+  window.netlifyIdentity.on("init", function(user) {
+    if (!user) {
+      window.netlifyIdentity.on("login", function() {
+        document.location.href = "/admin/";
+      });
+    }
+  });
+}
+} /* конец init() */
 </script>
 </body>
 </html>
