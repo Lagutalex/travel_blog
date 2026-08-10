@@ -27,24 +27,21 @@
           "kind": "photo",
           "size": "big",
           "alt": "PHOTO · The arch from the path below",
-          "caption": "",
-          "quote": null
+          "caption": ""
         },
         {
           "src": "media/boehmische-schweiz-2026/02.jpg",
           "kind": "photo",
           "size": "tall",
           "alt": "PHOTO · The gorge, from the boat",
-          "caption": "",
-          "quote": null
+          "caption": ""
         },
         {
           "src": "media/boehmische-schweiz-2026/03.jpg",
           "kind": "photo",
           "size": "square",
           "alt": "PHOTO · Sandstone and pine",
-          "caption": "",
-          "quote": null
+          "caption": ""
         }
       ]
     },
@@ -82,8 +79,7 @@
           "kind": "photo",
           "size": "tall",
           "alt": "PHOTO · Leaving the harbour",
-          "caption": "Out past the breakwater, every morning.",
-          "quote": null
+          "caption": "Out past the breakwater, every morning."
         },
         {
           "src": "media/croatia-2026/03.mp4",
@@ -91,16 +87,14 @@
           "videoId": "",
           "size": "square",
           "alt": "VIDEO · The islands from the drone",
-          "caption": "Water that colour doesn't photograph from the ground.",
-          "quote": null
+          "caption": "Water that colour doesn't photograph from the ground."
         },
         {
           "src": "media/croatia-2026/04.jpg",
           "kind": "photo",
           "size": "square",
           "alt": "PHOTO · Somewhere between islands",
-          "caption": "We stopped counting which bay was which.",
-          "quote": null
+          "caption": "We stopped counting which bay was which."
         },
         {
           "src": "media/croatia-2026/05.jpg",
@@ -138,24 +132,21 @@
           "kind": "photo",
           "size": "big",
           "alt": "PHOTO · The ridgeline we still talk about",
-          "caption": "Two hours up, and worth every one of them.",
-          "quote": null
+          "caption": "Two hours up, and worth every one of them."
         },
         {
           "src": "media/dolomites-2026/02.jpg",
           "kind": "photo",
           "size": "tall",
           "alt": "PHOTO · Late snow on the north face",
-          "caption": "",
-          "quote": null
+          "caption": ""
         },
         {
           "src": "media/dolomites-2026/03.jpg",
           "kind": "photo",
           "size": "square",
           "alt": "PHOTO · Dinner at the rifugio",
-          "caption": "",
-          "quote": null
+          "caption": ""
         }
       ]
     },
@@ -182,24 +173,21 @@
           "kind": "photo",
           "size": "big",
           "alt": "PHOTO · The Gothic Quarter, early morning",
-          "caption": "",
-          "quote": null
+          "caption": ""
         },
         {
           "src": "media/barcelona-2025/02.jpg",
           "kind": "photo",
           "size": "tall",
           "alt": "PHOTO · Somewhere off Passeig de Gràcia",
-          "caption": "",
-          "quote": null
+          "caption": ""
         },
         {
           "src": "media/barcelona-2025/03.jpg",
           "kind": "photo",
           "size": "square",
           "alt": "PHOTO · The long lunch",
-          "caption": "",
-          "quote": null
+          "caption": ""
         }
       ]
     },
@@ -226,24 +214,21 @@
           "kind": "photo",
           "size": "big",
           "alt": "PHOTO · The road climbing into the mountains",
-          "caption": "",
-          "quote": null
+          "caption": ""
         },
         {
           "src": "media/romania-2025/02.jpg",
           "kind": "photo",
           "size": "tall",
           "alt": "PHOTO · Bran Castle at dusk",
-          "caption": "",
-          "quote": null
+          "caption": ""
         },
         {
           "src": "media/romania-2025/03.jpg",
           "kind": "photo",
           "size": "square",
           "alt": "PHOTO · The cabin, no signal, no complaints",
-          "caption": "",
-          "quote": null
+          "caption": ""
         }
       ]
     }

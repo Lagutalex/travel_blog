@@ -60,6 +60,7 @@ collections:
 
               - label: "Страна"
                 name: "country"
+                required: false
                 widget: "string"
                 hint: "По-английски, одним словом или коротко. По этому полю на главной сами собираются кнопки-фильтры. Примеры: Croatia / Italy / Czech Republic"
 
@@ -71,6 +72,7 @@ collections:
 
               - label: "Время года"
                 name: "season"
+                required: false
                 widget: "select"
                 default: "Summer"
                 hint: "Год подставится сам. Выберешь Summer — на странице будет 'Summer 2027'."
@@ -90,17 +92,20 @@ collections:
 
               - label: "С кем ездили"
                 name: "people"
+                required: false
                 widget: "string"
                 default: "with my wife"
                 hint: "По-английски, с маленькой буквы. Примеры: with my wife / with friends & my wife"
 
               - label: "Места"
                 name: "places"
+                required: false
                 widget: "string"
                 hint: "Города или районы через запятую, по-английски. Пример: Trogir, the islands"
 
               - label: "Координаты на карте"
                 name: "geo"
+                required: false
                 widget: "geosearch"
                 hint: "Напиши название места и нажми 'Найти' — координаты подставятся сами."
 
@@ -129,6 +134,7 @@ collections:
 
               - label: "Короткое описание"
                 name: "excerpt"
+                required: false
                 widget: "text"
                 hint: "Одно-два предложения по-английски. Показывается в списке на главной, под названием."
 
@@ -198,8 +204,10 @@ collections:
                       - label: "Кто сказал"
                         name: "who"
                         widget: "string"
+                        required: false
                         hint: "Заглавными. Примеры: WIFE / SAM / US"
                       - label: "Что сказал"
                         name: "text"
                         widget: "string"
+                        required: false
                         hint: "Кавычки не нужны, добавятся сами."
