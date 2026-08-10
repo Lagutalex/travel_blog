@@ -114,21 +114,21 @@
       "season": "Spring",
       "media": [
         {
-          "src": "/media/dolomites-2026/01.jpg",
+          "src": "/media/uploads/img_6204.jpeg",
           "kind": "photo",
-          "size": "big",
+          "size": "square",
           "alt": "PHOTO · The ridgeline we still talk about",
           "caption": "Two hours up, and worth every one of them."
         },
         {
-          "src": "/media/dolomites-2026/02.jpg",
+          "src": "/media/uploads/img_5960.jpeg",
           "kind": "photo",
           "size": "tall",
           "alt": "PHOTO · Late snow on the north face",
           "caption": ""
         },
         {
-          "src": "/media/dolomites-2026/03.jpg",
+          "src": "/media/uploads/img_6154.jpeg",
           "kind": "photo",
           "size": "square",
           "alt": "PHOTO · Dinner at the rifugio",
@@ -140,7 +140,7 @@
       "date": "2026-05",
       "people": "with my wife",
       "heroAlt": "PHOTO · Peaks still holding snow",
-      "geo": "46.5405,12.1357",
+      "geo": "46.6559,11.2302",
       "coverAlt": "PHOTO · Ridgeline in the morning light",
       "country": "Italy",
       "days": 6,
