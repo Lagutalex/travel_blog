@@ -281,7 +281,14 @@ var esc = function(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace
 
 fetch("data/trips.json")
   .then(function(r){ return r.json(); })
-  .then(function(DATA){ init(DATA.trips || [], DATA.quote || null); })
+  .then(function(DATA){
+    try {
+      init(DATA.trips || [], DATA.quote || null);
+    } catch (err) {
+      /* ошибка где-то в отрисовке не должна стирать то, что уже успело показаться */
+      console.error("Rendering error:", err);
+    }
+  })
   .catch(function(err){
     console.error("Could not load trips.json", err);
     $("#tripRows").innerHTML = '<p style="padding:24px 0;color:var(--ink-3)">Could not load the trips. Try refreshing the page.</p>';
@@ -365,7 +372,7 @@ if (weekends.length) {
   $("#weekendGrid").innerHTML = weekends.slice(0, WEEKENDS_ON_HOME).map(function(t){
     return '<a class="wcard" href="trip.html?id='+t.id+'">'+
       pic(t.cover, t.coverAlt)+
-      '<div class="cap"><b>'+esc(t.title)+'</b><span>'+esc(monthYear(t))+' · '+esc(t.people)+'</span></div>'+
+      '<div class="cap"><b>'+esc(t.title)+'</b><span>'+esc(datesOf(t))+' · '+esc(t.people)+'</span></div>'+
     '</a>';
   }).join("");
   if (weekends.length > WEEKENDS_ON_HOME) {
