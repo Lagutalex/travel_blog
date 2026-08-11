@@ -156,6 +156,12 @@
           "size": "square",
           "src": "/media/uploads/img_5777.jpeg",
           "alt": "Amazing"
+        },
+        {
+          "kind": "video",
+          "size": "square",
+          "alt": ":)",
+          "src": "/media/uploads/img_5955.jpeg"
         }
       ],
       "places": "Alta Badia, Cortina",
