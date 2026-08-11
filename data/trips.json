@@ -133,6 +133,29 @@
           "size": "square",
           "alt": "PHOTO · Dinner at the rifugio",
           "caption": ""
+        },
+        {
+          "kind": "photo",
+          "size": "square",
+          "src": "/media/uploads/img_5813.jpeg",
+          "alt": ":)"
+        },
+        {
+          "kind": "photo",
+          "size": "square",
+          "src": "/media/uploads/img_6135.jpeg",
+          "alt": ":)"
+        },
+        {
+          "kind": "photo",
+          "size": "square",
+          "alt": "Wau! "
+        },
+        {
+          "kind": "photo",
+          "size": "square",
+          "src": "/media/uploads/img_5777.jpeg",
+          "alt": "Amazing"
         }
       ],
       "places": "Alta Badia, Cortina",
