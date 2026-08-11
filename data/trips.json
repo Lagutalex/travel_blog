@@ -155,21 +155,21 @@
       "season": "Autumn",
       "media": [
         {
-          "src": "/media/barcelona-2025/01.jpg",
+          "src": "/media/uploads/img_3985.jpeg",
           "kind": "photo",
-          "size": "big",
+          "size": "square",
           "alt": "PHOTO · The Gothic Quarter, early morning",
           "caption": ""
         },
         {
-          "src": "/media/barcelona-2025/02.jpg",
+          "src": "/media/uploads/img_4081.jpeg",
           "kind": "photo",
           "size": "tall",
           "alt": "PHOTO · Somewhere off Passeig de Gràcia",
           "caption": ""
         },
         {
-          "src": "/media/barcelona-2025/03.jpg",
+          "src": "/media/uploads/img_4020.jpeg",
           "kind": "photo",
           "size": "square",
           "alt": "PHOTO · The long lunch",
@@ -181,14 +181,14 @@
       "date": "2025-11",
       "people": "with my wife",
       "heroAlt": "PHOTO · The city at the end of the day",
-      "geo": "41.3874,2.1686",
+      "geo": "41.3826,2.1771",
       "coverAlt": "PHOTO · Rooftops of the Gothic Quarter at dusk",
       "country": "Spain",
       "days": 5,
-      "cover": "/media/barcelona-2025/cover.jpg",
+      "cover": "/media/uploads/img_3993.jpeg",
       "title": "Barcelona",
       "type": "trip",
-      "hero": "/media/barcelona-2025/hero.jpg",
+      "hero": "/media/uploads/img_4106.jpeg",
       "id": "barcelona-2025"
     },
     {
