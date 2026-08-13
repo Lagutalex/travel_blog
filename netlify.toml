@@ -1,0 +1,10 @@
+# Netlify читает этот файл сам — в панели ничего настраивать не нужно.
+# При каждом сохранении в админке Netlify запускает build.js,
+# который склеивает data/site.json + data/trips/*.json в data/trips.json.
+
+[build]
+  command = "node build.js"
+  publish = "."
+
+[build.environment]
+  NODE_VERSION = "20"

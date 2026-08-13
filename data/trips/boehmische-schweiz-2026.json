@@ -1,0 +1,34 @@
+{
+  "title": "Böhmische Schweiz",
+  "date": "2026-07",
+  "type": "weekend",
+  "country": "Czech Republic",
+  "details": {
+    "season": "Summer",
+    "days": 2,
+    "people": "with my wife",
+    "places": "Hřensko, Pravčická brána",
+    "geo": "50.8756,14.2372"
+  },
+  "covers": {
+    "cover": "/media/boehmische-schweiz-2026/cover.jpg",
+    "coverAlt": "PHOTO · Pravčická brána, the stone arch",
+    "hero": "/media/boehmische-schweiz-2026/hero.jpg",
+    "heroAlt": "PHOTO · Sandstone towers above the gorge"
+  },
+  "text": {
+    "excerpt": "Two days of sandstone towers and gorges, close enough to leave after breakfast.",
+    "intro": "Close enough that we left after breakfast and were walking by mid-morning. Sandstone towers, a gorge you cross by boat, and the arch that everyone photographs and nobody manages to make look as big as it is."
+  },
+  "media": [
+    {
+      "src": "/media/boehmische-schweiz-2026/01.jpg"
+    },
+    {
+      "src": "/media/boehmische-schweiz-2026/02.jpg"
+    },
+    {
+      "src": "/media/boehmische-schweiz-2026/03.jpg"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "title": "Romania",
+  "date": "2025-09",
+  "type": "trip",
+  "country": "Romania",
+  "details": {
+    "season": "Autumn",
+    "days": 0,
+    "people": "with friends & my wife",
+    "places": "Bran, Transfăgărășan",
+    "geo": "45.5149,25.3672"
+  },
+  "covers": {
+    "cover": "/media/romania-2025/cover.jpg",
+    "coverAlt": "PHOTO · Bran Castle at dusk, mist over the treeline",
+    "hero": "/media/romania-2025/hero.jpg",
+    "heroAlt": "PHOTO · The mountains along the Transfăgărășan"
+  },
+  "text": {
+    "excerpt": "Bran Castle, the Transfăgărășan, and three days at a cabin with no signal.",
+    "intro": "The Transfăgărășan is the kind of road you plan a whole trip around, and it earned it. After that, three days at a cabin with no signal — which turned out to be the part everyone talks about now."
+  },
+  "media": [
+    {
+      "src": "/media/romania-2025/01.jpg"
+    },
+    {
+      "src": "/media/romania-2025/02.jpg"
+    },
+    {
+      "src": "/media/romania-2025/03.jpg"
+    }
+  ]
+}

@@ -9,119 +9,262 @@
 <body>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script>
-  /* ------------------------------------------------------------------
-     Виджет "geosearch": пишешь название места, жмёшь Найти,
-     выбираешь из списка — координаты подставляются сами.
-     Хранит значение строкой "широта,долгота".
+  /* ==================================================================
+     1. Виджет «Точка на карте»
+     Пишешь название места, жмёшь «Найти», выбираешь из списка —
+     координаты подставляются сами. Хранится строкой "широта,долгота".
      Поиск через Photon (OpenStreetMap), бесплатно и без ключей.
-     ------------------------------------------------------------------ */
-  var GeoSearchControl = createClass({
+     ================================================================== */
+  var GeoControl = createClass({
     getInitialState: function () {
-      return { query: "", results: [], busy: false, error: "" };
+      return { q: "", list: [], busy: false, err: "" };
     },
 
-    search: function () {
+    find: function () {
       var self = this;
-      var q = this.state.query.trim();
+      var q = (this.state.q || "").trim();
       if (!q) return;
-      this.setState({ busy: true, error: "", results: [] });
+      this.setState({ busy: true, err: "", list: [] });
 
-      fetch("https://photon.komoot.io/api/?limit=5&q=" + encodeURIComponent(q))
+      fetch("https://photon.komoot.io/api/?limit=6&q=" + encodeURIComponent(q))
         .then(function (r) { return r.json(); })
         .then(function (data) {
           var list = (data.features || []).map(function (f) {
             var p = f.properties || {};
+            var c = f.geometry.coordinates; /* [долгота, широта] */
             var parts = [p.name, p.city, p.state, p.country].filter(Boolean);
-            return {
-              label: parts.join(", "),
-              lat: f.geometry.coordinates[1],
-              lng: f.geometry.coordinates[0]
-            };
+            return { label: parts.join(", "), lat: c[1], lng: c[0] };
           });
-          self.setState({
-            results: list,
-            busy: false,
-            error: list.length ? "" : "Ничего не найдено — попробуй написать иначе"
-          });
+          self.setState({ list: list, busy: false, err: list.length ? "" : "Ничего не нашлось" });
         })
         .catch(function () {
-          self.setState({ busy: false, error: "Поиск недоступен. Введи координаты вручную ниже." });
+          self.setState({ busy: false, err: "Поиск сейчас недоступен — впиши координаты вручную" });
         });
     },
 
     pick: function (item) {
-      var val = item.lat.toFixed(4) + "," + item.lng.toFixed(4);
-      this.props.onChange(val);
-      this.setState({ results: [], query: "" });
+      this.props.onChange(item.lat.toFixed(4) + "," + item.lng.toFixed(4));
+      this.setState({ list: [], q: "" });
     },
 
     render: function () {
       var self = this;
       var value = this.props.value || "";
 
-      var box = { display: "flex", gap: "8px", marginBottom: "8px" };
-      var inp = { flex: "1", padding: "8px 10px", border: "1px solid #ccc", borderRadius: "3px", fontSize: "14px" };
-      var btn = { padding: "8px 16px", border: "0", borderRadius: "3px", background: "#3a69c7",
-                  color: "#fff", cursor: "pointer", fontSize: "14px" };
-      var item = { padding: "8px 10px", cursor: "pointer", borderBottom: "1px solid #eee", fontSize: "14px" };
+      return h("div", { style: { display: "flex", flexDirection: "column", gap: "8px" } },
 
-      return h("div", { className: this.props.classNameWrapper },
-
-        h("div", { style: box },
+        /* строка поиска */
+        h("div", { style: { display: "flex", gap: "8px" } },
           h("input", {
             type: "text",
-            placeholder: "Например: Trogir Croatia",
-            style: inp,
-            value: this.state.query,
-            onChange: function (e) { self.setState({ query: e.target.value }); },
-            onKeyDown: function (e) { if (e.key === "Enter") { e.preventDefault(); self.search(); } }
+            placeholder: "Название места, например: Trogir",
+            value: this.state.q,
+            onChange: function (e) { self.setState({ q: e.target.value }); },
+            onKeyDown: function (e) {
+              if (e.key === "Enter") { e.preventDefault(); self.find(); }
+            },
+            style: {
+              flex: 1, padding: "10px 12px", border: "1px solid #dfdfe3",
+              borderRadius: "4px", fontSize: "14px"
+            }
           }),
-          h("button", { type: "button", style: btn, onClick: this.search },
-            this.state.busy ? "Ищу…" : "Найти")
+          h("button", {
+            type: "button",
+            onClick: this.find,
+            style: {
+              padding: "10px 18px", border: 0, borderRadius: "4px", cursor: "pointer",
+              background: "#3a69c7", color: "#fff", fontSize: "14px"
+            }
+          }, this.state.busy ? "Ищу…" : "Найти")
         ),
 
-        this.state.error
-          ? h("div", { style: { color: "#c0392b", fontSize: "13px", marginBottom: "8px" } }, this.state.error)
+        /* найденные варианты */
+        this.state.list.length
+          ? h("div", {
+              style: { border: "1px solid #dfdfe3", borderRadius: "4px", overflow: "hidden" }
+            }, this.state.list.map(function (item, i) {
+              return h("div", {
+                key: i,
+                onClick: function () { self.pick(item); },
+                style: {
+                  padding: "10px 12px", cursor: "pointer", fontSize: "14px",
+                  borderTop: i ? "1px solid #eee" : "none"
+                }
+              }, item.label);
+            }))
           : null,
 
-        this.state.results.length
-          ? h("div", { style: { border: "1px solid #ddd", borderRadius: "3px", marginBottom: "8px" } },
-              this.state.results.map(function (r, i) {
-                return h("div", {
-                  key: i,
-                  style: item,
-                  onClick: function () { self.pick(r); }
-                }, r.label + "  —  " + r.lat.toFixed(4) + ", " + r.lng.toFixed(4));
-              })
-            )
+        this.state.err
+          ? h("div", { style: { fontSize: "13px", color: "#a33" } }, this.state.err)
           : null,
 
+        /* текущее значение, при желании правится руками */
         h("input", {
           type: "text",
-          id: this.props.forID,
-          className: this.props.classNameWrapper,
-          style: inp,
-          placeholder: "широта,долгота — например 43.5125,16.2517",
           value: value,
+          placeholder: "широта,долгота — например 43.5125,16.2517",
           onChange: function (e) { self.props.onChange(e.target.value); },
-          onFocus: this.props.setActiveStyle,
-          onBlur: this.props.setInactiveStyle
+          style: {
+            padding: "10px 12px", border: "1px solid #dfdfe3", borderRadius: "4px",
+            fontSize: "14px", fontFamily: "monospace"
+          }
         }),
 
-        h("div", { style: { fontSize: "12px", color: "#777", marginTop: "6px" } },
-          value ? "Сохранено: " + value : "Пока не задано — точка не появится на карте")
+        value
+          ? h("div", { style: { fontSize: "12px", color: "#5a5a68" } }, "Точка выбрана: " + value)
+          : h("div", { style: { fontSize: "12px", color: "#8a8a95" } }, "Точка не выбрана — на странице просто не будет карты")
       );
     }
   });
 
-  var GeoSearchPreview = createClass({
+  var GeoPreview = createClass({
     render: function () {
       return h("div", {}, this.props.value || "");
     }
   });
 
-  CMS.registerWidget("geosearch", GeoSearchControl, GeoSearchPreview);
+  CMS.registerWidget("geosearch", GeoControl, GeoPreview);
 
+
+  /* ==================================================================
+     2. Окно предпросмотра справа.
+     Показывает поездку так, как она сложится на сайте, и —
+     главное — все кадры под номерами. Номер здесь = номер в списке
+     «Фото и видео» слева.
+     ================================================================== */
+  CMS.registerPreviewStyle(
+    "body{margin:0;font-family:-apple-system,Segoe UI,Roboto,sans-serif;color:#1c1c22;background:#fbf9f6}" +
+    ".pv{padding:24px 26px 60px;max-width:640px}" +
+    ".pv h1{font-size:26px;font-weight:500;margin:0 0 4px;line-height:1.15}" +
+    ".pv .meta{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#8a8a95;margin-bottom:22px}" +
+    ".pv .lead{font-size:15px;line-height:1.6;color:#43434e;margin:0 0 26px}" +
+    ".pv h2{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#b8583a;" +
+      "margin:30px 0 12px;padding-bottom:8px;border-bottom:1px solid #e6e2db}" +
+    ".pv .covers{display:grid;grid-template-columns:1fr 1fr;gap:10px}" +
+    ".pv .covers figure{margin:0}" +
+    ".pv .covers img{width:100%;display:block;border-radius:3px}" +
+    ".pv .covers figcaption{font-size:11px;color:#8a8a95;margin-top:5px}" +
+    ".pv .shots{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}" +
+    ".pv .shot{position:relative;background:#fff;border:1px solid #e6e2db;border-radius:3px;overflow:hidden}" +
+    ".pv .shot img,.pv .shot video{width:100%;display:block;aspect-ratio:3/2;object-fit:cover;background:#efece7}" +
+    ".pv .shot .n{position:absolute;top:6px;left:6px;background:#1c1c22;color:#fff;" +
+      "font-size:11px;line-height:1;padding:5px 7px;border-radius:3px;font-variant-numeric:tabular-nums}" +
+    ".pv .shot .c{padding:8px 9px;font-size:12px;line-height:1.45;color:#43434e}" +
+    ".pv .shot .q{padding:0 9px 9px;font-size:11px;color:#b8583a;line-height:1.4}" +
+    ".pv .shot .none{aspect-ratio:3/2;display:flex;align-items:center;justify-content:center;" +
+      "background:repeating-linear-gradient(45deg,#eceae5 0 2px,#f6f4f0 2px 12px);" +
+      "font-size:11px;color:#8a8a95;text-align:center;padding:0 10px}" +
+    ".pv .empty{font-size:13px;color:#8a8a95;padding:14px;border:1px dashed #ddd9d2;border-radius:3px}"
+    , { raw: true }
+  );
+
+  var MONTHS = ["January","February","March","April","May","June",
+                "July","August","September","October","November","December"];
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function whenLabel(date) {
+    var m = /^(\d{4})-(\d{2})$/.exec(date || "");
+    return m ? MONTHS[parseInt(m[2], 10) - 1] + " " + m[1] : (date || "дата не заполнена");
+  }
+
+  var TripPreview = createClass({
+    render: function () {
+      var data = this.props.entry.get("data");
+      var d = data && data.toJS ? data.toJS() : {};
+      var getAsset = this.props.getAsset;
+
+      /* только что загруженный файл ещё не в репозитории — его показывает getAsset */
+      function url(p) {
+        if (!p) return "";
+        try {
+          var a = getAsset(p);
+          var s = a ? String(a) : "";
+          return s || p;
+        } catch (e) { return p; }
+      }
+
+      var covers = d.covers || {};
+      var text = d.text || {};
+      var details = d.details || {};
+      var media = d.media || [];
+
+      var facts = [];
+      if (details.season) facts.push(details.season);
+      if (details.days) facts.push(details.days + " days");
+      if (details.people) facts.push(details.people);
+      if (details.places) facts.push(details.places);
+
+      var html = '<div class="pv">';
+
+      html += '<h1>' + esc(d.title || "Без названия") + '</h1>';
+      html += '<div class="meta">' + esc(whenLabel(d.date)) +
+              (facts.length ? " · " + esc(facts.join(" · ")) : "") + '</div>';
+
+      if (text.intro) html += '<p class="lead">' + esc(text.intro) + '</p>';
+
+      /* обложки */
+      html += '<h2>Обложки</h2>';
+      if (covers.cover || covers.hero) {
+        html += '<div class="covers">';
+        if (covers.cover) {
+          html += '<figure><img src="' + esc(url(covers.cover)) + '">' +
+                  '<figcaption>Карточка на главной</figcaption></figure>';
+        }
+        if (covers.hero) {
+          html += '<figure><img src="' + esc(url(covers.hero)) + '">' +
+                  '<figcaption>Шапка страницы</figcaption></figure>';
+        }
+        html += '</div>';
+      } else {
+        html += '<div class="empty">Обложки не загружены — на сайте будут аккуратные заглушки.</div>';
+      }
+
+      /* кадры */
+      html += '<h2>Фото и видео — ' + media.length + '</h2>';
+      if (!media.length) {
+        html += '<div class="empty">Ни одного кадра. Добавь их в списке «Фото и видео» слева.</div>';
+      } else {
+        html += '<div class="shots">';
+        media.forEach(function (m, i) {
+          m = m || {};
+          var n = i + 1;
+          html += '<div class="shot"><div class="n">' + n + '</div>';
+
+          if (m.youtubeId) {
+            html += '<div class="none">Видео с YouTube<br>' + esc(m.youtubeId) + '</div>';
+          } else if (m.src && /\.(mp4|mov|webm|m4v)$/i.test(m.src)) {
+            html += '<video src="' + esc(url(m.src)) + '" muted></video>';
+          } else if (m.src) {
+            html += '<img src="' + esc(url(m.src)) + '">';
+          } else {
+            html += '<div class="none">Файл не выбран</div>';
+          }
+
+          if (m.caption) html += '<div class="c">' + esc(m.caption) + '</div>';
+          if (m.quote && m.quote.text) {
+            html += '<div class="q">' + esc(m.quote.who || "") +
+                    (m.quote.who ? ": " : "") + '\u201c' + esc(m.quote.text) + '\u201d</div>';
+          }
+          html += '</div>';
+        });
+        html += '</div>';
+      }
+
+      html += '</div>';
+
+      return h("div", { dangerouslySetInnerHTML: { __html: html } });
+    }
+  });
+
+  CMS.registerPreviewTemplate("trips", TripPreview);
+
+
+  /* вход по email/паролю */
   if (window.netlifyIdentity) {
     window.netlifyIdentity.on("init", function (user) {
       if (!user) {

@@ -1,0 +1,52 @@
+{
+  "title": "Dolomites",
+  "date": "2026-05",
+  "type": "trip",
+  "country": "Italy",
+  "details": {
+    "season": "Spring",
+    "days": 6,
+    "people": "with my wife",
+    "places": "Alta Badia, Cortina",
+    "geo": "46.6559,11.2302"
+  },
+  "covers": {
+    "cover": "/media/uploads/img_6219.jpeg",
+    "coverAlt": "PHOTO · Ridgeline in the morning light",
+    "hero": "/media/uploads/img_6030.jpeg",
+    "heroAlt": "PHOTO · Peaks still holding snow"
+  },
+  "text": {
+    "excerpt": "Peaks still holding snow, valleys already green — both seasons in the same afternoon.",
+    "intro": "May is the strange month here. The valleys have already turned green and the peaks have not yet let go of winter, so you spend the day walking through both at once. We picked routes by how they looked from the car and regretted almost none of them."
+  },
+  "media": [
+    {
+      "src": "/media/uploads/img_6204.jpeg",
+      "caption": "Two hours up, and worth every one of them."
+    },
+    {
+      "src": "/media/uploads/img_5960.jpeg"
+    },
+    {
+      "src": "/media/uploads/img_6154.jpeg"
+    },
+    {
+      "src": "/media/uploads/img_5813.jpeg"
+    },
+    {
+      "src": "/media/uploads/img_6135.jpeg"
+    },
+    {
+      "src": "/media/uploads/img_6040.jpeg",
+      "caption": "Wau!"
+    },
+    {
+      "src": "/media/uploads/img_5777.jpeg",
+      "caption": "Amazing"
+    },
+    {
+      "src": "/media/uploads/img_5955.jpeg"
+    }
+  ]
+}

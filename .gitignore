@@ -1,0 +1,5 @@
+# Собирается автоматически из data/site.json и data/trips/*.json.
+# Руками не править и в репозиторий не класть.
+data/trips.json
+node_modules
+.DS_Store

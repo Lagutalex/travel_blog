@@ -1,0 +1,34 @@
+{
+  "title": "Barcelona",
+  "date": "2025-11",
+  "type": "trip",
+  "country": "Spain",
+  "details": {
+    "season": "Autumn",
+    "days": 5,
+    "people": "with my wife",
+    "places": "Barcelona",
+    "geo": "41.3826,2.1771"
+  },
+  "covers": {
+    "cover": "/media/uploads/img_3993.jpeg",
+    "coverAlt": "PHOTO · Rooftops of the Gothic Quarter at dusk",
+    "hero": "/media/uploads/img_4106.jpeg",
+    "heroAlt": "PHOTO · The city at the end of the day"
+  },
+  "text": {
+    "excerpt": "November turned out to be the right month — warm enough to sit outside, quiet enough to get a table.",
+    "intro": "Five days, mostly walking, mostly eating. November turned out to be the right month for it: warm enough to sit outside in the evening, quiet enough that we never once waited for a table."
+  },
+  "media": [
+    {
+      "src": "/media/uploads/img_3985.jpeg"
+    },
+    {
+      "src": "/media/uploads/img_4081.jpeg"
+    },
+    {
+      "src": "/media/uploads/img_4020.jpeg"
+    }
+  ]
+}

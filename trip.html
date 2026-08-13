@@ -70,33 +70,76 @@ nav .links a:hover{color:var(--accent-lite)}
 .intro p{font-family:var(--serif);font-weight:400;font-size:clamp(21px,2.6vw,30px);line-height:1.45;
   text-wrap:pretty}
 
-/* Кладка: колонки фиксированы, высота каждого кадра — своя.
-   Высота задаётся через grid-row: span N, N считается из реальных
-   пропорций фото после загрузки. Дыр не остаётся при любом числе кадров. */
-.mosaic{padding:0 var(--pad) clamp(70px,12vh,140px);max-width:1400px;margin:0 auto;
-  display:grid;grid-template-columns:repeat(3,1fr);
-  column-gap:clamp(8px,1vw,14px);grid-auto-rows:4px}
-.m{grid-row-end:span 90}          /* запасная высота, пока не сработал расчёт */
-.m.col2{grid-column:span 2}
-.m .inner{margin-bottom:clamp(20px,2.4vw,34px)}
-.m img,.m video{width:100%;height:auto;display:block;background:var(--bone)}
-.m .ph{width:100%}
-.m .cap{padding:12px 2px 0}
-.m .cap p{font-size:15px;line-height:1.6;font-weight:300;margin-bottom:6px}
-.m .cap .q{font-family:var(--mono);font-size:12px;color:var(--accent);line-height:1.5}
+/* ---------------------------------------------------------------
+   ГАЛЕРЕЯ
+   Кадры собираются в горизонтальные ряды по 1, 2 или 3 штуки.
+   Внутри ряда высота у всех одинаковая, а ширина — по пропорциям
+   самого снимка (flex-grow = ширина/высота). Поэтому ничего
+   не обрезается и не остаётся пустых углов.
+   Сколько кадров в ряду — решает скрипт, исходя из их количества.
+   --------------------------------------------------------------- */
+.gal{padding:0 var(--pad) clamp(70px,12vh,140px);max-width:1400px;margin:0 auto}
+.band{display:flex;align-items:flex-start;
+  gap:clamp(10px,1.1vw,16px);margin-bottom:clamp(14px,1.6vw,24px)}
+.band.solo{display:block}
+.band.solo .fig{max-width:100%}
+.fig{flex:1 1 0;min-width:0}
+.fig .box{position:relative;overflow:hidden;aspect-ratio:3/2;
+  background:oklch(93% 0.008 75)}
+.fig .box img,.fig .box video,.fig .box iframe{position:absolute;inset:0;
+  width:100%;height:100%;object-fit:cover;border:0}
+.fig .box.zoom{cursor:zoom-in}
+.fig .box.zoom::after{content:"";position:absolute;inset:0;
+  background:oklch(14% 0.01 60/0);transition:background .25s ease}
+.fig .box.zoom:hover::after{background:oklch(14% 0.01 60/.1)}
+.fig .cap{padding:12px 2px 0}
+.fig .cap p{font-size:14px;line-height:1.6;font-weight:300;color:var(--ink-2)}
+.fig .cap .q{font-family:var(--mono);font-size:12px;color:var(--accent);
+  line-height:1.5;margin-top:6px}
+/* кадр во всю ширину с репликой — реплика становится крупнее, ради неё всё и затевалось */
+.band.solo .fig .cap{max-width:70ch}
+.band.solo .fig .cap .q{font-size:13px}
+/* заглушка, когда файла ещё нет */
+.fig .box.empty{background:repeating-linear-gradient(45deg,oklch(90% 0.012 70) 0px,
+  oklch(90% 0.012 70) 2px,oklch(95% 0.008 75) 2px,oklch(95% 0.008 75) 14px);
+  display:flex;align-items:center;justify-content:center}
+.fig .box.empty>span{font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+  text-transform:uppercase;color:oklch(48% 0.02 60);text-align:center;padding:0 16px}
 
-/* пропорции только для заглушек — у настоящих фото своя высота */
-.m .ph.ratio-square{aspect-ratio:1/1}
-.m .ph.ratio-tall{aspect-ratio:3/4}
-.m .ph.ratio-wide{aspect-ratio:16/9}
-.m .ph.ratio-big{aspect-ratio:16/11}
-
-@media(max-width:900px){
-  .mosaic{grid-template-columns:repeat(2,1fr)}
+@media(max-width:700px){
+  .band{display:block;margin-bottom:0}
+  .band .fig{margin-bottom:clamp(20px,5vw,32px)}
 }
-@media(max-width:620px){
-  .mosaic{grid-template-columns:1fr}
-  .m.col2{grid-column:span 1}
+
+/* лайтбокс */
+.lb{position:fixed;inset:0;z-index:200;background:oklch(12% 0.008 60/.97);
+  display:none;flex-direction:column;backdrop-filter:blur(2px)}
+.lb.on{display:flex}
+.lb .stage{flex:1;display:flex;align-items:center;justify-content:center;
+  padding:clamp(48px,8vh,80px) clamp(16px,7vw,110px) 8px;min-height:0}
+.lb .stage img,.lb .stage video{max-width:100%;max-height:100%;
+  width:auto;height:auto;object-fit:contain}
+.lb .bar{padding:0 clamp(16px,7vw,110px) clamp(24px,5vh,40px);
+  display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.lb .txt{color:oklch(90% 0.006 75);max-width:70ch}
+.lb .txt p{font-size:14px;font-weight:300;line-height:1.6}
+.lb .txt .q{font-family:var(--mono);font-size:12px;color:var(--accent-lite);margin-top:6px}
+.lb .count{font-family:var(--mono);font-size:12px;letter-spacing:.08em;
+  color:oklch(65% 0.01 60);white-space:nowrap}
+.lb button{position:absolute;background:none;border:0;cursor:pointer;
+  color:oklch(92% 0.006 75);font-family:var(--mono);font-size:22px;line-height:1;
+  padding:14px 18px;transition:color .2s}
+.lb button:hover{color:var(--accent-lite)}
+.lb .close{top:10px;right:8px;font-size:26px}
+.lb .prev{left:0;top:50%;transform:translateY(-50%)}
+.lb .next{right:0;top:50%;transform:translateY(-50%)}
+@media(max-width:700px){
+  .lb .prev,.lb .next{top:auto;bottom:0;transform:none}
+  .lb .next{right:8px}
+  .lb .prev{left:8px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
 }
 
 .wheresec{padding:0 var(--pad) clamp(70px,12vh,140px);max-width:1400px;margin:0 auto}
@@ -210,6 +253,194 @@ function coordLabel(t){
   return dms(c[0], "N", "S") + " " + dms(c[1], "E", "W");
 }
 
+/* ---------------- ГАЛЕРЕЯ ---------------- */
+
+var VIDEO_EXT = /\.(mp4|mov|webm|m4v)$/i;
+
+function isVideo(m){
+  return m.kind === "video" || !!m.videoId || VIDEO_EXT.test(m.src || "");
+}
+function hasQuote(m){
+  return !!(m.quote && m.quote.text);
+}
+
+/* Разбивка кадров на ряды.
+   Ряд из 1 кадра — крупная пауза, из 2-3 — плотнее.
+   Видео и кадры с репликой всегда идут одни, во всю ширину. */
+function planBands(items){
+  var n = items.length, i = 0, p = 0, plan = [];
+
+  /* ритм рядов: чем больше кадров, тем плотнее */
+  var pattern = n <= 2  ? [1]
+              : n <= 6  ? [1, 2, 2]
+              : n <= 12 ? [1, 2, 3, 2]
+              :           [1, 3, 2, 3, 3];
+
+  function alone(k){ return isVideo(items[k]) || hasQuote(items[k]); }
+
+  while (i < n) {
+    if (alone(i)) { plan.push([i]); i++; continue; }
+
+    /* сколько обычных кадров идёт подряд до ближайшего видео/реплики */
+    var run = 0;
+    while (i + run < n && !alone(i + run)) run++;
+
+    var want = pattern[p % pattern.length]; p++;
+    if (want > run) want = run;
+    /* если после этого ряда останется ровно один кадр — перекраиваем,
+       чтобы он не повис в конце в одиночестве */
+    else if (run - want === 1) want = (want < 3) ? want + 1 : want - 1;
+
+    var band = [];
+    for (var k = 0; k < want; k++) { band.push(i); i++; }
+    plan.push(band);
+  }
+  return plan;
+}
+
+function figure(m, i){
+  var box, zoom = "";
+
+  if (m.videoId) {
+    box = '<div class="box" style="aspect-ratio:16/9">'+
+      '<iframe src="https://www.youtube-nocookie.com/embed/'+esc(m.videoId)+
+      '" title="'+esc(m.caption || m.alt || "Video")+
+      '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"'+
+      ' allowfullscreen loading="lazy"></iframe></div>';
+  } else if (m.src && isVideo(m)) {
+    box = '<div class="box" style="aspect-ratio:16/9">'+
+      '<video src="'+esc(m.src)+'" muted loop playsinline controls preload="metadata"></video></div>';
+  } else if (m.src) {
+    zoom = ' zoom';
+    box = '<div class="box'+zoom+'" data-i="'+i+'">'+
+      '<img src="'+esc(m.src)+'" alt="'+esc(m.caption || m.alt || "")+'" loading="lazy"></div>';
+  } else {
+    box = '<div class="box empty"><span>'+esc(m.alt || "PHOTO")+'</span></div>';
+  }
+
+  var cap = "";
+  if (m.caption || hasQuote(m)) {
+    cap = '<div class="cap">'+
+      (m.caption ? '<p>'+esc(m.caption)+'</p>' : '')+
+      (hasQuote(m) ? '<div class="q">'+esc(m.quote.who || "")+
+        (m.quote.who ? ": " : "")+'\u201c'+esc(m.quote.text)+'\u201d</div>' : '')+
+    '</div>';
+  }
+  return '<figure class="fig">'+box+cap+'</figure>';
+}
+
+/* Пропорции кадра известны только после загрузки файла.
+   До этого все кадры показываются как 3:2 — поэтому страница не прыгает.
+   После загрузки ставим настоящие пропорции и ширину внутри ряда. */
+function fitFrames(){
+  var gal = document.getElementById("gal");
+  if (!gal) return;
+
+  function apply(img){
+    var w = img.naturalWidth, h = img.naturalHeight;
+    if (!w || !h) return;
+    var box = img.parentNode, fig = box && box.parentNode;
+    if (!box || !fig) return;
+    box.style.aspectRatio = w + " / " + h;
+    fig.style.flexGrow = (w / h).toFixed(4);
+  }
+
+  var imgs = gal.querySelectorAll(".box img");
+  for (var n = 0; n < imgs.length; n++) {
+    var img = imgs[n];
+    if (img.complete && img.naturalWidth) { apply(img); continue; }
+    img.addEventListener("load", function(){ apply(this); });
+    img.addEventListener("error", function(){
+      /* файла нет — вместо битой картинки аккуратная заглушка */
+      var box = this.parentNode;
+      if (!box) return;
+      box.className = "box empty";
+      box.removeAttribute("data-i");
+      box.innerHTML = '<span>'+esc(this.getAttribute("alt") || "PHOTO")+'</span>';
+    });
+  }
+}
+
+/* Просмотр во весь экран: клик по фото, стрелки, Esc, свайп */
+function wireLightbox(frames){
+  var gal = document.getElementById("gal");
+  if (!gal) return;
+
+  var shots = [];
+  for (var n = 0; n < frames.length; n++) {
+    if (frames[n].src && !isVideo(frames[n])) shots.push(n);
+  }
+  if (!shots.length) return;
+
+  var lb = document.createElement("div");
+  lb.className = "lb";
+  lb.innerHTML =
+    '<button class="close" aria-label="Close">\u00d7</button>'+
+    '<button class="prev" aria-label="Previous">\u2190</button>'+
+    '<button class="next" aria-label="Next">\u2192</button>'+
+    '<div class="stage"><img alt=""></div>'+
+    '<div class="bar"><div class="txt"></div><div class="count"></div></div>';
+  document.body.appendChild(lb);
+
+  var img = lb.querySelector(".stage img");
+  var txt = lb.querySelector(".txt");
+  var count = lb.querySelector(".count");
+  var pos = 0;
+
+  function show(k){
+    pos = (k + shots.length) % shots.length;
+    var m = frames[shots[pos]];
+    img.src = m.src;
+    img.alt = m.caption || m.alt || "";
+    txt.innerHTML =
+      (m.caption ? '<p>'+esc(m.caption)+'</p>' : '')+
+      (hasQuote(m) ? '<div class="q">'+esc(m.quote.who || "")+
+        (m.quote.who ? ": " : "")+'\u201c'+esc(m.quote.text)+'\u201d</div>' : '');
+    count.textContent = (pos + 1) + " / " + shots.length;
+  }
+  function open(frameIndex){
+    var k = shots.indexOf(frameIndex);
+    if (k === -1) return;
+    show(k);
+    lb.classList.add("on");
+    document.body.style.overflow = "hidden";
+  }
+  function close(){
+    lb.classList.remove("on");
+    document.body.style.overflow = "";
+    img.src = "";
+  }
+
+  gal.addEventListener("click", function(e){
+    var box = e.target.closest ? e.target.closest(".box.zoom") : null;
+    if (!box) return;
+    open(parseInt(box.getAttribute("data-i"), 10));
+  });
+
+  lb.querySelector(".close").addEventListener("click", close);
+  lb.querySelector(".prev").addEventListener("click", function(){ show(pos - 1); });
+  lb.querySelector(".next").addEventListener("click", function(){ show(pos + 1); });
+  lb.addEventListener("click", function(e){
+    if (e.target === lb || e.target.classList.contains("stage")) close();
+  });
+  document.addEventListener("keydown", function(e){
+    if (!lb.classList.contains("on")) return;
+    if (e.key === "Escape") close();
+    if (e.key === "ArrowLeft") show(pos - 1);
+    if (e.key === "ArrowRight") show(pos + 1);
+  });
+
+  /* свайп на телефоне */
+  var x0 = null;
+  lb.addEventListener("touchstart", function(e){ x0 = e.touches[0].clientX; }, {passive:true});
+  lb.addEventListener("touchend", function(e){
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 50) show(pos + (dx < 0 ? 1 : -1));
+    x0 = null;
+  }, {passive:true});
+}
+
 var sorted = TRIPS.slice().sort(function(a,b){
   var da = a.date || (a.year + "-01");
   var db = b.date || (b.year + "-01");
@@ -254,40 +485,13 @@ if (i === -1) {
       '<p>'+esc(t.intro)+'</p></section>';
   }
 
-  if (t.media && t.media.length) {
-    html += '<section class="mosaic" id="mosaic">'+ t.media.map(function(m){
-      var size = m.size || "square";
-      /* широкие кадры занимают две колонки, остальные одну */
-      var wide = (size === "wide" || size === "big");
-      var ratio = "ratio-" + size;
-      var inner = "";
+  var FRAMES = (t.media || []).filter(function(m){ return m && (m.src || m.videoId || m.alt); });
 
-      if (m.kind === "video" && m.videoId) {
-        inner = '<div class="ph ratio-wide"><span>'+esc(m.alt||"VIDEO")+'</span>'+
-          '<iframe src="https://www.youtube-nocookie.com/embed/'+m.videoId+
-          '" title="'+esc(m.alt||"")+'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>';
-      } else if (m.kind === "video" && m.src) {
-        inner = '<video src="'+m.src+'" muted loop playsinline controls preload="metadata"></video>';
-      } else if (m.src) {
-        /* настоящее фото — своя высота, без обрезки */
-        inner = '<img src="'+m.src+'" alt="'+esc(m.alt||"")+'" loading="lazy">';
-      } else {
-        /* файла ещё нет — аккуратная заглушка заданной формы */
-        inner = '<div class="ph '+ratio+'"><span>'+esc(m.alt||"PHOTO")+'</span>'+
-          (m.kind === "video" ? '<div class="playmark"><i></i></div>' : '')+
-        '</div>';
-      }
-
-      var cap = "";
-      if (m.caption || (m.quote && m.quote.text)) {
-        cap = '<div class="cap">'+
-          (m.caption ? '<p>'+esc(m.caption)+'</p>' : '')+
-          (m.quote && m.quote.text
-            ? '<div class="q">'+esc(m.quote.who||"")+': "'+esc(m.quote.text)+'"</div>'
-            : '')+
-        '</div>';
-      }
-      return '<div class="m'+(wide ? ' col2' : '')+'"><div class="inner">'+inner+cap+'</div></div>';
+  if (FRAMES.length) {
+    html += '<section class="gal" id="gal">'+ planBands(FRAMES).map(function(band){
+      return '<div class="band'+(band.length === 1 ? ' solo' : '')+'">'+
+        band.map(function(i){ return figure(FRAMES[i], i); }).join("")+
+      '</div>';
     }).join("") + '</section>';
   }
 
@@ -305,45 +509,8 @@ if (i === -1) {
 
   $("#app").innerHTML = html;
 
-  /* ---- кладка: высота каждого кадра считается из его реальных пропорций ---- */
-  (function layoutMosaic(){
-    var grid = document.getElementById("mosaic");
-    if (!grid) return;
-
-    var ROW = 4; /* высота строки сетки, из CSS grid-auto-rows */
-
-    function fit(){
-      var items = grid.querySelectorAll(".m");
-      for (var n = 0; n < items.length; n++) {
-        var inner = items[n].querySelector(".inner");
-        if (!inner) continue;
-        var h = inner.getBoundingClientRect().height;
-        if (h > 0) items[n].style.gridRowEnd = "span " + Math.ceil(h / ROW);
-      }
-    }
-
-    /* пересчитываем по мере подгрузки картинок */
-    var media = grid.querySelectorAll("img, video, iframe");
-    for (var n = 0; n < media.length; n++) {
-      var el = media[n];
-      if (el.tagName === "IMG" && el.complete) continue;
-      el.addEventListener("load", fit);
-      el.addEventListener("loadedmetadata", fit);
-      el.addEventListener("error", function(){
-        /* файла нет — показываем заглушку вместо битой картинки */
-        var box = document.createElement("div");
-        box.className = "ph ratio-square";
-        box.innerHTML = '<span>' + (this.getAttribute("alt") || "PHOTO") + '</span>';
-        if (this.parentNode) this.parentNode.replaceChild(box, this);
-        fit();
-      });
-    }
-
-    fit();
-    addEventListener("load", fit);
-    addEventListener("resize", fit);
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
-  })();
+  fitFrames();
+  wireLightbox(FRAMES);
 
   var cc = coordsOf(t);
   if (cc) {
