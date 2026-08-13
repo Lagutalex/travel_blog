@@ -76,7 +76,7 @@
           "caption": "Water that colour doesn't photograph from the ground."
         },
         {
-          "src": "/media/uploads/img_7499.jpeg",
+          "src": "/media/uploads/img_7518.jpeg",
           "kind": "photo",
           "size": "square",
           "alt": "PHOTO · Somewhere between islands",
@@ -92,6 +92,11 @@
             "who": "US",
             "text": "Next time, after the boats are gone"
           }
+        },
+        {
+          "kind": "photo",
+          "size": "square",
+          "alt": "."
         }
       ],
       "places": "Trogir, the islands",
