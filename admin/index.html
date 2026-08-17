@@ -142,7 +142,7 @@
       "margin:30px 0 12px;padding-bottom:8px;border-bottom:1px solid #e6e2db}" +
     ".pv .covers{display:grid;grid-template-columns:1fr 1fr;gap:10px}" +
     ".pv .covers figure{margin:0}" +
-    ".pv .covers img{width:100%;display:block;border-radius:3px}" +
+    ".pv .covers img,.pv .covers video{width:100%;display:block;border-radius:3px}" +
     ".pv .covers figcaption{font-size:11px;color:#8a8a95;margin-top:5px}" +
     ".pv .shots{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}" +
     ".pv .shot{position:relative;background:#fff;border:1px solid #e6e2db;border-radius:3px;overflow:hidden}" +
@@ -207,7 +207,8 @@
 
       if (text.intro) html += '<p class="lead">' + esc(text.intro) + '</p>';
 
-      /* обложки */
+      /* обложки: cover всегда фото, hero может быть и видео */
+      var heroIsVideo = covers.hero && /\.(mp4|mov|webm|m4v)$/i.test(covers.hero);
       html += '<h2>Обложки</h2>';
       if (covers.cover || covers.hero) {
         html += '<div class="covers">';
@@ -216,8 +217,11 @@
                   '<figcaption>Карточка на главной</figcaption></figure>';
         }
         if (covers.hero) {
-          html += '<figure><img src="' + esc(url(covers.hero)) + '">' +
-                  '<figcaption>Шапка страницы</figcaption></figure>';
+          html += '<figure>' +
+                  (heroIsVideo
+                    ? '<video src="' + esc(url(covers.hero)) + '" muted loop autoplay playsinline></video>'
+                    : '<img src="' + esc(url(covers.hero)) + '">') +
+                  '<figcaption>Шапка страницы' + (heroIsVideo ? ' (видео)' : '') + '</figcaption></figure>';
         }
         html += '</div>';
       } else {

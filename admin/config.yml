@@ -127,8 +127,9 @@ collections:
 
           - label: "Шапка страницы (горизонтальная)"
             name: "hero"
-            widget: "image"
+            widget: "file"
             required: false
+            hint: "Фото (.jpg/.png) или видео (.mp4/.mov) — крутится само, без звука."
 
           - label: "Шапка — текст, пока фото нет"
             name: "heroAlt"

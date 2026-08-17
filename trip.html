@@ -91,14 +91,6 @@ nav .links a:hover{color:var(--accent-lite)}
 .fig .box.zoom::after{content:"";position:absolute;inset:0;
   background:oklch(14% 0.01 60/0);transition:background .3s ease}
 .fig .box.zoom:hover::after{background:oklch(14% 0.01 60/.09)}
-.fig .box .play{position:absolute;inset:0;display:flex;align-items:center;
-  justify-content:center;pointer-events:none}
-.fig .box .play i{width:52px;height:52px;border-radius:999px;
-  background:oklch(14% 0.01 60/.42);backdrop-filter:blur(2px);
-  display:flex;align-items:center;justify-content:center}
-.fig .box .play i::before{content:"";display:block;margin-left:4px;
-  border-style:solid;border-width:9px 0 9px 15px;
-  border-color:transparent transparent transparent oklch(98% 0.005 75)}
 .fig .cap{padding:10px 2px 0}
 .fig .cap p{font-size:14px;line-height:1.55;font-weight:300;color:var(--ink-2)}
 
@@ -386,22 +378,20 @@ function tile(item, w, full, rowH, cols){
   var isYoutube = !!m.videoId;
 
   if (isYoutube) {
-    /* видео с YouTube — открывается по клику в полноэкранном просмотре
-       со звуком; в сетке лежит превью с кнопкой play поверх */
+    /* видео с YouTube — превью-кадр, само не крутится (запрещено
+       политикой YouTube); открывается по клику в полном просмотре со звуком */
     h = full ? Math.round(w / (16/9)) : rowH;
     cls += " zoom";
     inner =
       '<img src="https://img.youtube.com/vi/'+esc(m.videoId)+'/maxresdefault.jpg" '+
-        'alt="'+esc(m.caption || m.alt || "")+'" loading="lazy">'+
-      '<span class="play"><i></i></span>';
+        'alt="'+esc(m.caption || m.alt || "")+'" loading="lazy">';
   } else if (m.src && isVideo(m)) {
     /* видео из собственных файлов — крутится само, без звука и без
        рамки плеера; полный просмотр со звуком открывается по клику */
     h = full ? Math.round(w / (16/9)) : rowH;
     cls += " zoom";
     inner =
-      '<video src="'+esc(m.src)+'" muted loop playsinline autoplay preload="metadata"></video>'+
-      '<span class="play"><i></i></span>';
+      '<video src="'+esc(m.src)+'" muted loop playsinline autoplay preload="metadata"></video>';
   } else if (m.src) {
     cls += " zoom";
     inner = '<img src="'+esc(m.src)+'" alt="'+esc(m.caption || m.alt || "")+'" loading="lazy">';
@@ -550,9 +540,16 @@ if (i === -1) {
 
   var html = "";
 
+  var heroIsVideo = t.hero && VIDEO_EXT.test(t.hero);
+  var heroInner = t.hero
+    ? (heroIsVideo
+        ? '<video src="'+t.hero+'" muted loop playsinline autoplay preload="metadata"></video>'
+        : '<img src="'+t.hero+'" alt="'+esc(t.title)+'" onerror="this.remove()">')
+    : '';
+
   html += '<section class="cover">'+
     '<div class="ph sea"><span>'+esc(t.heroAlt || "PHOTO")+'</span>'+
-      (t.hero ? '<img src="'+t.hero+'" alt="'+esc(t.title)+'" onerror="this.remove()">' : '')+
+      heroInner+
     '</div>'+
     '<div class="veil"></div>'+
     '<div class="txt">'+
