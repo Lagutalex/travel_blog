@@ -167,9 +167,9 @@ collections:
         fields:
           - label: "Файл"
             name: "src"
-            widget: "image"
+            widget: "file"
             required: false
-            hint: "Фото или видеофайл. Для видео с YouTube оставь пустым и заполни поле ниже."
+            hint: "Фото (.jpg/.png) или видеофайл (.mp4/.mov). Для видео с YouTube оставь пустым и заполни поле ниже."
 
           - label: "Подпись под кадром"
             name: "caption"
