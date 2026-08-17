@@ -91,6 +91,14 @@ nav .links a:hover{color:var(--accent-lite)}
 .fig .box.zoom::after{content:"";position:absolute;inset:0;
   background:oklch(14% 0.01 60/0);transition:background .3s ease}
 .fig .box.zoom:hover::after{background:oklch(14% 0.01 60/.09)}
+.fig .box .play{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;pointer-events:none}
+.fig .box .play i{width:52px;height:52px;border-radius:999px;
+  background:oklch(14% 0.01 60/.42);backdrop-filter:blur(2px);
+  display:flex;align-items:center;justify-content:center}
+.fig .box .play i::before{content:"";display:block;margin-left:4px;
+  border-style:solid;border-width:9px 0 9px 15px;
+  border-color:transparent transparent transparent oklch(98% 0.005 75)}
 .fig .cap{padding:10px 2px 0}
 .fig .cap p{font-size:14px;line-height:1.55;font-weight:300;color:var(--ink-2)}
 
@@ -375,14 +383,25 @@ function tile(item, w, full, rowH, cols){
   var h = full ? Math.round(w / Math.min(Math.max(r, 0.7), 2.4)) : rowH;
   var inner, cls = "box";
 
-  if (m.videoId) {
+  var isYoutube = !!m.videoId;
+
+  if (isYoutube) {
+    /* видео с YouTube — открывается по клику в полноэкранном просмотре
+       со звуком; в сетке лежит превью с кнопкой play поверх */
     h = full ? Math.round(w / (16/9)) : rowH;
-    inner = '<iframe src="https://www.youtube-nocookie.com/embed/'+esc(m.videoId)+
-      '" title="'+esc(m.caption || m.alt || "Video")+
-      '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"'+
-      ' allowfullscreen loading="lazy"></iframe>';
+    cls += " zoom";
+    inner =
+      '<img src="https://img.youtube.com/vi/'+esc(m.videoId)+'/maxresdefault.jpg" '+
+        'alt="'+esc(m.caption || m.alt || "")+'" loading="lazy">'+
+      '<span class="play"><i></i></span>';
   } else if (m.src && isVideo(m)) {
-    inner = '<video src="'+esc(m.src)+'" muted loop playsinline controls preload="metadata"></video>';
+    /* видео из собственных файлов — крутится само, без звука и без
+       рамки плеера; полный просмотр со звуком открывается по клику */
+    h = full ? Math.round(w / (16/9)) : rowH;
+    cls += " zoom";
+    inner =
+      '<video src="'+esc(m.src)+'" muted loop playsinline autoplay preload="metadata"></video>'+
+      '<span class="play"><i></i></span>';
   } else if (m.src) {
     cls += " zoom";
     inner = '<img src="'+esc(m.src)+'" alt="'+esc(m.caption || m.alt || "")+'" loading="lazy">';
@@ -417,9 +436,10 @@ function wireLightbox(frames){
   var gal = document.getElementById("gal");
   if (!gal) return;
 
+  /* в полный просмотр попадает всё, кроме заглушек без файла */
   var shots = [];
   for (var n = 0; n < frames.length; n++) {
-    if (frames[n].src && !isVideo(frames[n])) shots.push(n);
+    if (frames[n].src || frames[n].videoId) shots.push(n);
   }
   if (!shots.length) return;
 
@@ -429,11 +449,11 @@ function wireLightbox(frames){
     '<button class="close" aria-label="Close">\u00d7</button>'+
     '<button class="prev" aria-label="Previous">\u2190</button>'+
     '<button class="next" aria-label="Next">\u2192</button>'+
-    '<div class="stage"><img alt=""></div>'+
+    '<div class="stage"></div>'+
     '<div class="bar"><div class="txt"></div><div class="count"></div></div>';
   document.body.appendChild(lb);
 
-  var img = lb.querySelector(".stage img");
+  var stage = lb.querySelector(".stage");
   var txt = lb.querySelector(".txt");
   var count = lb.querySelector(".count");
   var pos = 0;
@@ -441,8 +461,21 @@ function wireLightbox(frames){
   function show(k){
     pos = (k + shots.length) % shots.length;
     var m = frames[shots[pos]];
-    img.src = m.src;
-    img.alt = m.caption || m.alt || "";
+
+    if (m.videoId) {
+      /* полный YouTube-плеер, со звуком, только здесь */
+      stage.innerHTML =
+        '<iframe src="https://www.youtube-nocookie.com/embed/'+esc(m.videoId)+
+        '?autoplay=1" title="'+esc(m.caption || m.alt || "Video")+
+        '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"'+
+        ' allowfullscreen style="width:min(100%,140vh);aspect-ratio:16/9;max-height:100%"></iframe>';
+    } else if (isVideo(m)) {
+      stage.innerHTML =
+        '<video src="'+esc(m.src)+'" controls autoplay playsinline></video>';
+    } else {
+      stage.innerHTML = '<img src="'+esc(m.src)+'" alt="'+esc(m.caption || m.alt || "")+'">';
+    }
+
     txt.innerHTML =
       (m.caption ? '<p>'+esc(m.caption)+'</p>' : '')+
       (hasQuote(m) ? '<div class="q">'+esc(m.quote.who || "")+
@@ -459,7 +492,7 @@ function wireLightbox(frames){
   function close(){
     lb.classList.remove("on");
     document.body.style.overflow = "";
-    img.src = "";
+    stage.innerHTML = ""; /* останавливает и видео, и YouTube-плеер */
   }
 
   gal.addEventListener("click", function(e){
