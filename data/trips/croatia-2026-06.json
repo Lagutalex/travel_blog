@@ -1,0 +1,15 @@
+{
+  "type": "trip",
+  "details": {
+    "season": "Summer",
+    "days": 0,
+    "people": "with my wife"
+  },
+  "title": "Croatia",
+  "date": "2026-06",
+  "country": "Croatia",
+  "covers": {
+    "cover": "/media/uploads/cover.jpg",
+    "hero": "/media/uploads/cro-01.mov"
+  }
+}
