@@ -11,5 +11,25 @@
   "covers": {
     "cover": "/media/uploads/cover.jpg",
     "hero": "/media/uploads/cro-01.mov"
-  }
+  },
+  "media": [
+    {
+      "src": "/media/uploads/img_7502.jpeg"
+    },
+    {
+      "src": "/media/uploads/img_6709.jpeg"
+    },
+    {
+      "src": "/media/uploads/img_7518.jpeg"
+    },
+    {
+      "src": "/media/uploads/05.jpg"
+    },
+    {
+      "src": "/media/uploads/img_7506.jpeg"
+    },
+    {
+      "src": "/media/uploads/img_7515.jpeg"
+    }
+  ]
 }
