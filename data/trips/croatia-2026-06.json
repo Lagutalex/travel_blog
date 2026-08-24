@@ -2,8 +2,9 @@
   "type": "trip",
   "details": {
     "season": "Summer",
-    "days": 0,
-    "people": "with my wife"
+    "days": 9,
+    "people": "with friends and wife",
+    "geo": "43.5330,16.2578"
   },
   "title": "Croatia",
   "date": "2026-06",
@@ -63,5 +64,8 @@
     },
     {},
     {}
-  ]
+  ],
+  "text": {
+    "intro": "It turned out to be an amazing trip. 10 friends, a yacht, and complete freedom.\n\nUsually, we choose the mountains and cooler destinations in summer, but Croatia absolutely amazed us. We’d be happy to come back again!"
+  }
 }
