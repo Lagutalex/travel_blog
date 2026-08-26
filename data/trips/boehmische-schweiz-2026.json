@@ -11,24 +11,30 @@
     "geo": "50.8756,14.2372"
   },
   "covers": {
-    "cover": "/media/boehmische-schweiz-2026/cover.jpg",
+    "cover": "/media/uploads/feb09fbb-a923-404f-a10e-72b349a9287f_1_105_c.jpeg",
     "coverAlt": "PHOTO · Pravčická brána, the stone arch",
-    "hero": "/media/boehmische-schweiz-2026/hero.jpg",
+    "hero": "/media/uploads/ffe618dc-3194-4504-bf2a-06033f4043ef_1_105_c.jpeg",
     "heroAlt": "PHOTO · Sandstone towers above the gorge"
   },
   "text": {
-    "excerpt": "Two days of sandstone towers and gorges, close enough to leave after breakfast.",
-    "intro": "Close enough that we left after breakfast and were walking by mid-morning. Sandstone towers, a gorge you cross by boat, and the arch that everyone photographs and nobody manages to make look as big as it is."
+    "excerpt": "It was my Birthday ! \nThank you friends, that you are in my life. ",
+    "intro": "Thank you, my friends, for always being up for my crazy adventures.\nWe celebrated a birthday at a campsite, went swimming in the rain, went hiking, and sat around the campfire with a guitar.\nIt means a lot to me, and I’m really grateful for these moments!"
   },
   "media": [
     {
-      "src": "/media/boehmische-schweiz-2026/01.jpg"
+      "src": "/media/uploads/f48afd95-1723-4bf7-91ef-2cc981f3c9cc_1_105_c.jpeg"
     },
     {
-      "src": "/media/boehmische-schweiz-2026/02.jpg"
+      "src": "/media/uploads/80802b7a-f7d8-45b3-99a2-c9fce2664f68_1_105_c.jpeg"
     },
     {
-      "src": "/media/boehmische-schweiz-2026/03.jpg"
+      "src": "/media/uploads/389a82f6-9b5a-4f15-930f-698a83874c1f.heic"
+    },
+    {
+      "src": "/media/uploads/f45304a6-1295-49e2-b338-4c2bfd2b1eb2_1_105_c.jpeg"
+    },
+    {
+      "src": "/media/uploads/d8224f23-55cf-49ba-b370-2f2986e4d259_1_105_c.jpeg"
     }
   ]
 }
