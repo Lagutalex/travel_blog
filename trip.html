@@ -595,6 +595,7 @@ if (i === -1) {
     clearTimeout(timer);
     timer = setTimeout(function(){
       var now = colsFor(window.innerWidth);
+      if (now === lastCols) return; /* ширина не менялась — не трогаем DOM */
       renderGallery(FRAMES);
       lastCols = now;
     }, 150);
