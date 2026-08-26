@@ -9,5 +9,35 @@
   },
   "title": "Prague",
   "date": "2026-08",
-  "country": "Czech Republic"
+  "country": "Czech Republic",
+  "covers": {
+    "cover": "/media/uploads/727af8a5-4fdb-43a7-a19c-6bff7bb98b39_1_105_c.jpeg",
+    "hero": "/media/uploads/e9c1c8c8-6633-4dbb-b4bf-1869419141be_1_105_c.jpeg"
+  },
+  "media": [
+    {
+      "src": "/media/uploads/7d6f7983-e91e-4b68-9e1c-e47267165cdb_1_105_c.jpeg"
+    },
+    {
+      "src": "/media/uploads/85cf1489-a450-4b9a-ab21-c09e5c553492_1_105_c.jpeg"
+    },
+    {
+      "src": "/media/uploads/a7a42007-7695-4a72-bb30-8cc74a771cba_1_105_c.jpeg"
+    },
+    {
+      "src": "/media/uploads/918d225b-19f9-4fc6-bb8a-dfaa556c1b19_1_105_c.jpeg"
+    },
+    {
+      "src": "/media/uploads/c5b758dd-9379-4cb1-ac38-dfbfc9a218a2_1_105_c.jpeg"
+    },
+    {
+      "src": "/media/uploads/d3c33b5c-132f-4540-bdde-f99af6766093_1_105_c.jpeg"
+    },
+    {
+      "src": "/media/uploads/c756912d-c85f-4870-a017-c7577d088063_1_105_c.jpeg"
+    },
+    {
+      "src": "/media/uploads/41f61ef8-8eb9-409d-8d34-508d09eaf9f7_1_105_c.jpeg"
+    }
+  ]
 }
